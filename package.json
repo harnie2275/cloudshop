@@ -4,7 +4,9 @@
   "description": "e-commerce system",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,37 @@
   "bugs": {
     "url": "https://github.com/harnie2275/cloudshop/issues"
   },
-  "homepage": "https://github.com/harnie2275/cloudshop#readme"
+  "homepage": "https://github.com/harnie2275/cloudshop#readme",
+  "dependencies": {
+    "axios": "^1.2.1",
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "consola": "^2.15.3",
+    "cookie-session": "^2.0.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "csurf": "^1.11.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "express-rate-limit": "^6.7.0",
+    "express-session": "^1.17.3",
+    "helmet": "^6.0.1",
+    "http-status-codes": "^2.2.0",
+    "joi": "^17.7.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.4",
+    "mongoose": "^6.8.0",
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.8.0",
+    "passport": "^0.6.0",
+    "query-string": "^8.0.1",
+    "querystring": "^0.2.1",
+    "rate-limiter": "^0.2.0",
+    "xss-clean": "^0.1.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
 }

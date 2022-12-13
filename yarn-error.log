@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/morningstar/.nvm/versions/node/v19.1.0/bin/node /usr/local/bin/yarn init
+  /Users/morningstar/.nvm/versions/node/v19.1.0/bin/node /usr/local/bin/yarn add express axios bcryptjs connect-flash cookie-session consola cors csurf dotenv express-async-errors express-rate-limit express-session helmet moment mongoose node-cron nodemailer querystring query-strin rate-limiter yamljs
 
 PATH: 
   /Users/morningstar/.nvm/versions/node/v19.1.0/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/morningstar/Library/Android/sdk/platform-tools/:/Applications/Visual Studio Code.app/Contents/Resources/app/bin
@@ -14,15 +14,38 @@ Platform:
   darwin x64
 
 Trace: 
-  SyntaxError: /Users/morningstar/Work/cloudshopa-api/package.json: Unexpected end of JSON input
-      at JSON.parse (<anonymous>)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:1629:59
-      at Generator.next (<anonymous>)
-      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:310:30)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:321:13
+  Error: https://registry.yarnpkg.com/query-strin: Not found
+      at params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66145:18)
+      at self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:513:28)
+      at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:627:28)
+      at IncomingMessage.emit (node:events:525:35)
+      at endReadableNT (node:internal/streams/readable:1359:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
 
 npm manifest: 
-  
+  {
+    "name": "cloudshopa-api",
+    "version": "1.0.0",
+    "description": "e-commerce system",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/harnie2275/cloudshop.git"
+    },
+    "author": "HOKAGE",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/harnie2275/cloudshop/issues"
+    },
+    "homepage": "https://github.com/harnie2275/cloudshop#readme"
+  }
 
 yarn manifest: 
   No manifest
