@@ -1,0 +1,19 @@
+{
+  "name": "cloudshopa-api",
+  "version": "1.0.0",
+  "description": "e-commerce system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harnie2275/cloudshop.git"
+  },
+  "author": "HOKAGE",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/harnie2275/cloudshop/issues"
+  },
+  "homepage": "https://github.com/harnie2275/cloudshop#readme"
+}
