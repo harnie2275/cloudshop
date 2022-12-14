@@ -3,61 +3,66 @@ const bcrypt = require("bcryptjs");
 const { JWT_SECRET, JWT_LIFETIME } = require("../config/env");
 const jwt = require("jsonwebtoken");
 
-const UserSchema = new Schema({
-  firstname: {
-    type: String,
-    trim: true,
-    min: 3,
+const UserSchema = new Schema(
+  {
+    firstname: {
+      type: String,
+      trim: true,
+      min: 3,
+    },
+    lastname: {
+      type: String,
+      trim: true,
+      min: 3,
+    },
+    email: {
+      type: String,
+      required: [true, "email is required"],
+      unique: [true, "user with the given email already exist"],
+    },
+    company: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    password: {
+      type: String,
+      min: 8,
+      required: [true, "password is required"],
+      select: false,
+    },
+    role: {
+      type: String,
+      enum: ["admin", "user", "editor", "sale rep", "marketing"],
+      default: "user",
+    },
+    dp: {
+      type: String,
+    },
+    verified: {
+      type: Boolean,
+    },
+    phone: {
+      type: Number,
+      min: 11,
+      unique: [true, "user with the given number already exist"],
+      required: [true, "phone is required"],
+    },
   },
-  lastname: {
-    type: String,
-    trim: true,
-    min: 3,
-  },
-  email: {
-    type: String,
-    required: [true, "email is required"],
-    unique: [true, "user with the given email already exist"],
-  },
-  company: {
-    type: String,
-  },
-  address: {
-    type: String,
-  },
-  city: {
-    type: String,
-  },
-  country: {
-    type: String,
-  },
-  state: {
-    type: String,
-  },
-  password: {
-    type: String,
-    min: 8,
-    required: [true, "password is required"],
-    select: false,
-  },
-  role: {
-    type: String,
-    enum: ["admin", "user", "editor", "sale rep", "marketing"],
-    default: "user",
-  },
-  dp: {
-    type: String,
-  },
-  verified: {
-    type: Boolean,
-  },
-  phone: {
-    type: Number,
-    min: 11,
-    unique: [true, "user with the given number already exist"],
-    required: [true, "phone is required"],
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 UserSchema.statics.findOneOrCreate = function findOneOrCreate(condition, doc) {
   const self = this;

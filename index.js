@@ -9,6 +9,7 @@ const passport = require("passport");
 const flash = require("connect-flash");
 const session = require("express-session");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 
 /**
  * @description importing extra config
@@ -34,12 +35,12 @@ const connectDB = require("./DB/connect");
  */
 app.set("trust proxy", 1);
 app.use(limiter);
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 app.use(helmet());
 app.use(cors());
 app.use(xss());
 app.use(passport.initialize());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(session({ secret: "SECRET", resave: true, saveUninitialized: true })); // session secret
 app.use(flash());
 
@@ -48,6 +49,7 @@ app.use(flash());
  */
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
+const productRoutes = require("./routes/product.routes");
 
 /**
  * @return routes
@@ -71,6 +73,7 @@ app.get(`${API_VERSION}/`, function (req, res, next) {
 });
 app.use(`${API_VERSION}/auth`, authRoutes);
 app.use(`${API_VERSION}/user`, userRoutes);
+app.use(`${API_VERSION}/product`, productRoutes);
 
 /**
  * @return next error

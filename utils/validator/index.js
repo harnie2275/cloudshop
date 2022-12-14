@@ -39,4 +39,20 @@ const loginValidator = ({ email, password }) => {
   return { error: false };
 };
 
-module.exports = { regValidator, loginValidator };
+const productValidator = (data) => {
+  const schema = JOI.object({
+    displayName: JOI.string().required(),
+    amount: JOI.number().required(),
+    productCategory: JOI.string().required(),
+    productImage: JOI.string().required(),
+    catchPhrase: JOI.string().required(),
+    productType: JOI.string().required(),
+    SKU: JOI.string().required(),
+    inventory: JOI.object().required(),
+    shippingFee: JOI.number().required(),
+  });
+
+  return schema.validate(data);
+};
+
+module.exports = { regValidator, loginValidator, productValidator };
