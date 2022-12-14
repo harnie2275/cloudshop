@@ -159,8 +159,8 @@ exports.addCategory = async (req, res, next) => {
 
 exports.productQuery = async (req, res, next) => {
   try {
-    const { id, name } = req.query;
-    if (!id || !name) {
+    const { id } = req.query;
+    if (!id) {
       if (!id)
         return respondWithError(
           res,
@@ -168,15 +168,8 @@ exports.productQuery = async (req, res, next) => {
           "product id was not found",
           StatusCodes.BAD_REQUEST
         );
-      if (!name)
-        return respondWithError(
-          res,
-          {},
-          "product name not found",
-          StatusCodes.BAD_REQUEST
-        );
     }
-    const product = await Product.findOne({ _id: id, displayName: name });
+    const product = await Product.findOne({ _id: id });
     if (!product)
       return respondWithError(
         res,
