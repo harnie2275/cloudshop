@@ -36,7 +36,7 @@ exports.profile = async (req, res, next) => {
       const link = `${WEB_APP_URL}/activate?token=${randomToken.token}`;
       return respondWithSuccess(
         res,
-        { tempoLink: link },
+        { tempoLink: link, unverified: true },
         `Verify your email address, an email has been sent to ${user.email}`,
         StatusCodes.OK
       );

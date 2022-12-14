@@ -5,6 +5,8 @@ const User = require("../models/User");
 const { respondWithError, respondWithSuccess } = require("../utils/response");
 const crypto = require("crypto");
 const { regValidator, loginValidator } = require("../utils/validator");
+const randomize = require("randomatic");
+const { use } = require("passport");
 
 /**
  *
@@ -155,8 +157,8 @@ exports.login = async (req, res, next) => {
       const link = `${WEB_APP_URL}/activate?token=${randomToken.token}`;
       return respondWithSuccess(
         res,
-        { token, tempoLink: link },
-        "Login successfully",
+        { token, tempoLink: link, unverified: true },
+        `Verify your email address, an email has been sent to ${user.email}`,
         StatusCodes.OK
       );
     }
@@ -217,6 +219,13 @@ exports.activateAccount = async (req, res, next) => {
   }
 };
 
+/**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns sends new activation link to unverified account and deleting previous one
+ */
 exports.resendActivateLink = async (req, res, next) => {
   try {
     const user = await User.findById(req.id);
@@ -246,6 +255,114 @@ exports.resendActivateLink = async (req, res, next) => {
       res,
       { tempoLink: link },
       `Link has been send to your email address - ${user.email}`,
+      StatusCodes.OK
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};
+
+/**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns send 6 digits One-Time Password to verify ownership before resetting password
+ */
+exports.resetPasswordLink = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email)
+      return respondWithError(
+        res,
+        {},
+        "Email address is required",
+        StatusCodes.BAD_REQUEST
+      );
+    const user = await User.findOne({ email });
+    if (!user)
+      return respondWithError(
+        res,
+        {},
+        "User with this address doesn't exist ",
+        StatusCodes.BAD_REQUEST
+      );
+
+    //consideration: check for existing tokens and delete
+    const OTP = randomize("0", 6);
+    const randomToken = await Token.findOneOrCreate(
+      { token: OTP },
+      {
+        userId: user._id,
+        token: OTP,
+      }
+    );
+    if (!randomToken)
+      return respondWithError(
+        res,
+        {},
+        `${randomToken.message}`,
+        StatusCodes.EXPECTATION_FAILED
+      );
+    randomToken.save();
+
+    /**
+     * @param {*} sendMail send a mail to user.
+     */
+    respondWithSuccess(
+      res,
+      { tempoOTP: randomToken.token },
+      `A One-Time Password has been sent to ${user.email}`,
+      StatusCodes.OK
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { otp, password } = req.body;
+    if (!otp || !password) {
+      if (!otp)
+        return respondWithError(
+          res,
+          {},
+          "OTP is required",
+          StatusCodes.BAD_REQUEST
+        );
+      if (!password)
+        return respondWithError(
+          res,
+          {},
+          "Password is required",
+          StatusCodes.BAD_REQUEST
+        );
+    }
+    const correctToken = await Token.findOne({ token: otp });
+    if (!correctToken)
+      return respondWithError(
+        res,
+        {},
+        "Invalid OTP, Please provide the right OTP",
+        StatusCodes.BAD_REQUEST
+      );
+    const user = await User.findById(correctToken.userId).select("+password");
+    if (!user)
+      return respondWithError(
+        res,
+        {},
+        "Invalid OTP, Please provide the right OTP",
+        StatusCodes.BAD_REQUEST
+      );
+    user.password = password;
+    user.save();
+    correctToken.delete();
+    const token = await user.generateToken();
+    respondWithSuccess(
+      res,
+      { token },
+      "Password has been reset successfully",
       StatusCodes.OK
     );
   } catch (error) {
