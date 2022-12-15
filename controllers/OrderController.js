@@ -30,7 +30,7 @@ exports.placeOrder = async (req, res, next) => {
     }
     //check for item unit and inventory
     req.body.items.map(async (anItem) => {
-      await validateInventory(anItem).then(async (res) => {
+      await validateInventory(anItem).then((res) => {
         if (res.error === true) {
           return respondWithError(
             res,
@@ -39,40 +39,38 @@ exports.placeOrder = async (req, res, next) => {
             StatusCodes.BAD_REQUEST
           );
         }
-        const restructedObj = { orderId: randomize("0", 8), ...req.body };
-        const newOrder = await Order.create({ ...restructedObj });
-        if (!newOrder)
-          return respondWithError(
-            res,
-            {},
-            newOrder.message,
-            StatusCodes.BAD_REQUEST
-          );
-        /**
-         * @param {*} updateInventory
-         */
-        // newOrder.items.map(async (anItem) => {
-        //   await updateInventory(anItem, "reduce").then((result) => {
-        //     if (result.error === true)
-        //       return respondWithError(
-        //         res,
-        //         {},
-        //         result.error.message,
-        //         StatusCodes.BAD_REQUEST
-        //       );
-        //     respondWithSuccess(
-        //       res,
-        //       newOrder,
-        //       "Your order has been placed",
-        //       StatusCodes.OK
-        //     );
-        //     /**
-        //      * @returns send order mail for placement of order and all necessary details
-        //      */
-        //   });
-        // });
       });
     });
+    // const restructedObj = { orderId: randomize("0", 8), ...req.body };
+    // const newOrder = await Order.create({ ...restructedObj });
+    // if (!newOrder)
+    //   return respondWithError(
+    //     res,
+    //     {},
+    //     newOrder.message,
+    //     StatusCodes.BAD_REQUEST
+    //   );
+    // /**
+    //  * @param {*} updateInventory
+    //  */
+    // newOrder.items.map(async (anItem) => {
+    //   await updateInventory(anItem, "reduce")
+    //     .then(() => {
+    //       respondWithSuccess(
+    //         res,
+    //         newOrder,
+    //         "Your order has been placed",
+    //         StatusCodes.OK
+    //       );
+    //       /**
+    //        * @returns send order mail for placement of order and all necessary details
+    //        */
+    //     })
+    //     .catch((error) => {
+    //       respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+    //     });
+    // });
+    res.send("ok");
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }

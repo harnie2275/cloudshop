@@ -89,7 +89,8 @@ exports.allCategory = async (req, res, next) => {
 exports.addProduct = async (req, res, next) => {
   try {
     const user = await User.findById(req.id);
-    if (user.role !== "admin" || user.role !== "sale rep")
+
+    if (user.role !== "admin" && user.role !== "sale rep")
       return respondWithError(
         res,
         {},
@@ -130,7 +131,7 @@ exports.addProduct = async (req, res, next) => {
 exports.addCategory = async (req, res, next) => {
   try {
     const user = await User.findById(req.id);
-    if (user.role !== "admin" || user.role !== "sale rep")
+    if (user.role !== "admin" && user.role !== "sale rep")
       return respondWithError(
         res,
         {},
