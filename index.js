@@ -50,6 +50,7 @@ app.use(flash());
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const productRoutes = require("./routes/product.routes");
+const orderRoutes = require("./routes/order.routes");
 
 /**
  * @return routes
@@ -74,6 +75,7 @@ app.get(`${API_VERSION}/`, function (req, res, next) {
 app.use(`${API_VERSION}/auth`, authRoutes);
 app.use(`${API_VERSION}/user`, userRoutes);
 app.use(`${API_VERSION}/product`, productRoutes);
+app.use(`${API_VERSION}/order`, orderRoutes);
 
 /**
  * @return next error

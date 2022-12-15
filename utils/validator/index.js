@@ -55,4 +55,22 @@ const productValidator = (data) => {
   return schema.validate(data);
 };
 
-module.exports = { regValidator, loginValidator, productValidator };
+const orderValidator = (data) => {
+  const schema = JOI.object({
+    // orderId: JOI.string().required(),
+    billingAddress: JOI.object().required(),
+    user: JOI.string().required(),
+    totalAmount: JOI.number().required(),
+    items: JOI.array().required(),
+    paymentMethod: JOI.string().required(),
+  });
+
+  return schema.validate(data);
+};
+
+module.exports = {
+  regValidator,
+  loginValidator,
+  productValidator,
+  orderValidator,
+};
