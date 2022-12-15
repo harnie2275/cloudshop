@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const randomize = require("randomatic");
+const { validate } = require("../models/Order");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const { respondWithError, respondWithSuccess } = require("../utils/response");
@@ -19,72 +20,38 @@ const { orderValidator } = require("../utils/validator");
  */
 exports.placeOrder = async (req, res, next) => {
   try {
-    const { error } = orderValidator(req.body);
-    if (error) {
+    const restructedObj = { orderId: randomize("0", 8), ...req.body };
+    const newOrder = await Order.create({ ...restructedObj });
+
+    if (!newOrder)
       return respondWithError(
         res,
         {},
-        error.details?.[0].message,
+        newOrder.message,
         StatusCodes.BAD_REQUEST
       );
-    }
-    //check for item unit and inventory
-    req.body.items.map(async (anItem) => {
-      await validateInventory(anItem).then((res) => {
-        if (res.error === true) {
-          return respondWithError(
+    /**
+     * @param {*} updateInventory
+     */
+    newOrder.items.map(async (anItem) => {
+      await updateInventory(anItem, "reduce")
+        .then(() => {
+          respondWithSuccess(
             res,
-            {},
-            res.error.message,
-            StatusCodes.BAD_REQUEST
+            newOrder,
+            "Your order has been placed",
+            StatusCodes.OK
           );
-        }
-      });
+          /**
+           * @returns send order mail for placement of order and all necessary details
+           */
+        })
+        .catch((error) => {
+          respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+        });
     });
-    // const restructedObj = { orderId: randomize("0", 8), ...req.body };
-    // const newOrder = await Order.create({ ...restructedObj });
-    // if (!newOrder)
-    //   return respondWithError(
-    //     res,
-    //     {},
-    //     newOrder.message,
-    //     StatusCodes.BAD_REQUEST
-    //   );
-    // /**
-    //  * @param {*} updateInventory
-    //  */
-    // newOrder.items.map(async (anItem) => {
-    //   await updateInventory(anItem, "reduce")
-    //     .then(() => {
-    //       respondWithSuccess(
-    //         res,
-    //         newOrder,
-    //         "Your order has been placed",
-    //         StatusCodes.OK
-    //       );
-    //       /**
-    //        * @returns send order mail for placement of order and all necessary details
-    //        */
-    //     })
-    //     .catch((error) => {
-    //       respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
-    //     });
-    // });
-    res.send("ok");
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
-  }
-};
-
-const validateInventory = async (item) => {
-  try {
-    const product = await Product.findById(item.id);
-    if (product.inventory.amount < 1) {
-      return { error: true, message: `${product.displayName} is out of stock` };
-    }
-    return;
-  } catch (error) {
-    return { error: true, message: error.message };
   }
 };
 
@@ -106,3 +73,54 @@ const updateInventory = async (item, action) => {
     return { error: true, message: error.message };
   }
 };
+
+/**
+ *
+ * @param {*} req.body receive an order id whose order status is not delivered or out for delivery from user
+ * @param {*} res deny admin right.
+ * @param {*} next
+ * @returns updateInventory
+ */
+exports.userCancelOrder = async (req, res, next) => {};
+/**
+ *
+ * @param {*} req.body receive an order id whose order status is not delivered from an admin or sales rep
+ * @param {*} res deny user, editor and markerter right.
+ * @param {*} next
+ * @returns updateInventory
+ */
+exports.adminCancelOrder = async (req, res, next) => {};
+
+/**
+ *
+ * @param {*} req.body receive an order id whose order status is not canceled
+ * @param {*} res deny user, editor and markerter right.
+ * @param {*} next
+ * @returns update field or paymentRef for cash on delivery and status
+ */
+exports.adminUpdateOrder = async (req, res, next) => {};
+
+/**
+ *
+ * @param {*} req receive a req.id from authorization.
+ * @param {*} res all orders by user
+ * @param {*} next
+ *
+ */
+exports.myOrder = async (req, res, next) => {};
+
+/**
+ *
+ * @param {*} req receive an order id from admin, or sales rep
+ * @param {*} res a single order
+ * @param {*} next
+ */
+exports.queryOrderById = async (req, res, next) => {};
+
+/**
+ *
+ * @param {*} req receive a user email or phone from admin, or sales rep
+ * @param {*} res all orders by user
+ * @param {*} next
+ */
+exports.queryOrderByUser = async (req, res, next) => {};
