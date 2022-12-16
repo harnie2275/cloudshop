@@ -89,15 +89,17 @@ exports.allCategory = async (req, res, next) => {
  */
 exports.addProduct = async (req, res, next) => {
   try {
-    // const user = await User.findById(req.id);
+    const user = await User.findById(req.id);
 
-    // if (user.role !== "admin" && user.role !== "sale rep")
-    //   return respondWithError(
-    //     res,
-    //     {},
-    //     "Your are not authorized to upload product",
-    //     StatusCodes.UNAUTHORIZED
-    //   );
+    if (["marketing", "editor", "user"].includes(user.role)) {
+      respondWithError(
+        res,
+        {},
+        "Your are not authorized to upload product",
+        StatusCodes.UNAUTHORIZED
+      );
+      return;
+    }
     const { error } = productValidator(req.body);
     if (error) {
       return respondWithError(
@@ -107,16 +109,31 @@ exports.addProduct = async (req, res, next) => {
         StatusCodes.BAD_REQUEST
       );
     }
+    const { productCategory } = req.body;
+    if (
+      productCategory !== undefined &&
+      productCategory.wordPhrase.length < 1
+    ) {
+      respondWithError(
+        res,
+        {},
+        "Kindly provide a category",
+        StatusCodes.BAD_REQUEST
+      );
+      return;
+    }
 
-    const productImageURL = await cloudinary.uploader.upload(
-      req.body.productImage,
-      {
+    const productImageURL =
+      req.body.productImage.substring(0, 4) !== "http" &&
+      (await cloudinary.uploader.upload(req.body.productImage, {
         folder: "products",
-      }
-    );
+      }));
     const newObj = {
       ...req.convertedBody,
-      productImage: productImageURL.secure_url,
+      productImage:
+        req.body.productImage.substring(0, 4) !== "http"
+          ? productImageURL.secure_url
+          : req.body.productImage,
     };
 
     const addedProduct = await Product.create({ ...newObj });
@@ -144,7 +161,7 @@ exports.addProduct = async (req, res, next) => {
 exports.addCategory = async (req, res, next) => {
   try {
     const user = await User.findById(req.id);
-    if (user.role !== "admin" && user.role !== "sale rep") {
+    if (["marketing", "editor", "user"].includes(user.role)) {
       respondWithError(
         res,
         {},
@@ -155,14 +172,16 @@ exports.addCategory = async (req, res, next) => {
     }
     const body = req.body;
     const thumbnailURL =
-      body.thumbnail !== undefined &&
+      body?.thumbnail !== undefined &&
+      body?.thumbnail.substring(0, 4) !== "http" &&
       (await cloudinary.uploader.upload(req.body.thumbnail, {
         folder: "categories",
       }));
 
-    const newObj = req.body.thumbnail
-      ? { ...body, thumbnail: thumbnailURL.secure_url }
-      : req.body;
+    const newObj =
+      req.body.thumbnail && body?.thumbnail.substring(0, 4) !== "http"
+        ? { ...body, thumbnail: thumbnailURL.secure_url }
+        : req.body;
 
     const addedCategory = await Category.create({ ...newObj });
     if (!addedCategory)
@@ -172,6 +191,26 @@ exports.addCategory = async (req, res, next) => {
         addedCategory?.message,
         StatusCodes.BAD_REQUEST
       );
+    /***
+     * @returns update parent category if any;
+     */
+    if (addedCategory.parentCategory !== undefined) {
+      const upStreamCategory = await Category.findOne({
+        wordPhrase: addedCategory.parentCategory.wordPhrase,
+      });
+      if (!upStreamCategory)
+        return respondWithError(
+          res,
+          {},
+          "Category was added but could not find parent category",
+          StatusCodes.BAD_REQUEST
+        );
+      upStreamCategory.subItem = [
+        ...upStreamCategory.subItem,
+        { name: addedCategory.name, wordPhrase: addedCategory.wordPhrase },
+      ];
+      upStreamCategory.save();
+    }
     addedCategory.save();
     respondWithSuccess(
       res,

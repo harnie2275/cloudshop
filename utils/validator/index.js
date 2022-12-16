@@ -43,7 +43,7 @@ const productValidator = (data) => {
   const schema = JOI.object({
     displayName: JOI.string().required(),
     amount: JOI.number().required(),
-    productCategory: JOI.string().required(),
+    productCategory: JOI.object().required(),
     productImage: JOI.string().required(),
     catchPhrase: JOI.string().required(),
     productType: JOI.string().required(),

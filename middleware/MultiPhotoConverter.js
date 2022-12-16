@@ -12,10 +12,14 @@ exports.MultiPhotoConverter = async (req, res, next) => {
     }
     let newPhotoGallery = [];
     photoGallery?.map(async (aPhoto, i) => {
-      const productImageURL = await cloudinary.uploader.upload(aPhoto, {
-        folder: "products",
-      });
-      newPhotoGallery.push(productImageURL.secure_url);
+      const productImageURL =
+        aPhoto.substring(0, 4) !== "http" &&
+        (await cloudinary.uploader.upload(aPhoto, {
+          folder: "products",
+        }));
+      newPhotoGallery.push(
+        aPhoto.substring(0, 4) !== "http" ? productImageURL?.secure_url : aPhoto
+      );
       if (i === photoGallery.length - 1) {
         req.convertedBody = { ...req.body, photoGallery: newPhotoGallery };
         next();

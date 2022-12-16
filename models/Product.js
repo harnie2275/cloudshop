@@ -12,9 +12,7 @@ const ProductSchema = new Schema(
       required: [true, "Amount is required"],
     },
     productCategory: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "Category",
+      type: Object,
     },
     productImage: {
       type: String,
