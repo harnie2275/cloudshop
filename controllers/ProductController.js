@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const Category = require("../models/Category");
 const Product = require("../models/Product");
 const User = require("../models/User");
+const cloudinary = require("../utils/image/upload");
 const { respondWithError, respondWithSuccess } = require("../utils/response");
 const { productValidator } = require("../utils/validator");
 
@@ -88,15 +89,15 @@ exports.allCategory = async (req, res, next) => {
  */
 exports.addProduct = async (req, res, next) => {
   try {
-    const user = await User.findById(req.id);
+    // const user = await User.findById(req.id);
 
-    if (user.role !== "admin" && user.role !== "sale rep")
-      return respondWithError(
-        res,
-        {},
-        "Your are not authorized to upload product",
-        StatusCodes.UNAUTHORIZED
-      );
+    // if (user.role !== "admin" && user.role !== "sale rep")
+    //   return respondWithError(
+    //     res,
+    //     {},
+    //     "Your are not authorized to upload product",
+    //     StatusCodes.UNAUTHORIZED
+    //   );
     const { error } = productValidator(req.body);
     if (error) {
       return respondWithError(
@@ -106,7 +107,19 @@ exports.addProduct = async (req, res, next) => {
         StatusCodes.BAD_REQUEST
       );
     }
-    const addedProduct = await Product.create({ ...req.body });
+
+    const productImageURL = await cloudinary.uploader.upload(
+      req.body.productImage,
+      {
+        folder: "products",
+      }
+    );
+    const newObj = {
+      ...req.convertedBody,
+      productImage: productImageURL.secure_url,
+    };
+
+    const addedProduct = await Product.create({ ...newObj });
     addedProduct.save();
     respondWithSuccess(
       res,
@@ -131,14 +144,27 @@ exports.addProduct = async (req, res, next) => {
 exports.addCategory = async (req, res, next) => {
   try {
     const user = await User.findById(req.id);
-    if (user.role !== "admin" && user.role !== "sale rep")
-      return respondWithError(
+    if (user.role !== "admin" && user.role !== "sale rep") {
+      respondWithError(
         res,
         {},
         "Your are not authorized to upload product",
         StatusCodes.UNAUTHORIZED
       );
-    const addedCategory = await Category.create({ ...req.body });
+      return;
+    }
+    const body = req.body;
+    const thumbnailURL =
+      body.thumbnail !== undefined &&
+      (await cloudinary.uploader.upload(req.body.thumbnail, {
+        folder: "categories",
+      }));
+
+    const newObj = req.body.thumbnail
+      ? { ...body, thumbnail: thumbnailURL.secure_url }
+      : req.body;
+
+    const addedCategory = await Category.create({ ...newObj });
     if (!addedCategory)
       return respondWithError(
         res,

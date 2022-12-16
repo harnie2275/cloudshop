@@ -50,6 +50,10 @@ const productValidator = (data) => {
     SKU: JOI.string().required(),
     inventory: JOI.object().required(),
     shippingFee: JOI.number().required(),
+    photoGallery: JOI.array(),
+    variation: JOI.object(),
+    productTag: JOI.array(),
+    detailedDescription: JOI.string(),
   });
 
   return schema.validate(data);

@@ -19,9 +19,9 @@ exports.validateInventry = async (req, res, next) => {
       .where("_id")
       .in(items)
       .where("inventory.amount")
-      .lt(0)
+      .lt(1)
       .exec();
-    console.log(records);
+
     if (records.length >= 1) {
       const errorObject = records.map((err) => ({
         item: err.displayName,
