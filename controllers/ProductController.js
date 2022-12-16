@@ -37,7 +37,9 @@ exports.allProduct = async (req, res, next) => {
 exports.queryProduct = async (req, res, next) => {
   try {
     const { category } = req.query;
-    const queriedProduct = await Product.find({ productCategory: category });
+    const queriedProduct = await Product.find({
+      "productCategory.wordPhrase": category,
+    });
     respondWithSuccess(
       res,
       queriedProduct,
