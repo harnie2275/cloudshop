@@ -61,7 +61,7 @@ exports.queryProduct = async (req, res, next) => {
 exports.allCategory = async (req, res, next) => {
   try {
     const allCategory = await Category.find();
-    respondWithError(
+    respondWithSuccess(
       res,
       allCategory,
       "Category has been fetched",
