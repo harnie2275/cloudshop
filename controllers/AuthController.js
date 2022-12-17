@@ -91,6 +91,17 @@ exports.register = async (req, res, next) => {
      * @return generate token and endpoint response
      */
     const token = await createdUser.generateToken();
+    if (
+      req.query?.fromCheckout !== undefined &&
+      req.query.fromCheckout === true
+    ) {
+      return respondWithSuccess(
+        res,
+        { token, tempoLink: link, userId: createdUser._id },
+        `A mail has been sent to ${createdUser.email}, kindly verify your account`,
+        StatusCodes.OK
+      );
+    }
 
     return respondWithSuccess(
       res,
@@ -365,6 +376,48 @@ exports.resetPassword = async (req, res, next) => {
       "Password has been reset successfully",
       StatusCodes.OK
     );
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};
+
+exports.updateAccount = async (req, res, next) => {
+  try {
+    if (Object.entries(req.body).length < 1) {
+      respondWithError(
+        res,
+        {},
+        "Please provide an information to be update",
+        StatusCodes.BAD_REQUEST
+      );
+      return;
+    }
+    if (Object.keys(req.body).includes("email")) {
+      respondWithError(
+        res,
+        {},
+        "email address can't be updated",
+        StatusCodes.BAD_REQUEST
+      );
+      return;
+    }
+    await User.findByIdAndUpdate(
+      req.id,
+      { ...req.body },
+      { new: true },
+      function (err, model) {
+        if (err) {
+          respondWithError(res, {}, err.message, StatusCodes.BAD_REQUEST);
+          return;
+        }
+        respondWithSuccess(
+          res,
+          model,
+          "User Information has been updated",
+          StatusCodes.OK
+        );
+      }
+    ).clone();
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
