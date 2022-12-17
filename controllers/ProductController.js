@@ -66,6 +66,19 @@ exports.queryProduct = async (req, res, next) => {
             StatusCodes.OK
           );
         }
+        // case "rating": {
+        //   const sortedProduct = queriedProduct.sort(
+        //     (a, b) =>
+        //       b.rating.reduce((bc, bd) => bc + bd) -
+        //       a.rating.reduce((ac, ad) => ac + ad)
+        //   );
+        //   return respondWithSuccess(
+        //     res,
+        //     sortedProduct,
+        //     "Sorted successfully",
+        //     StatusCodes.OK
+        //   );
+        // }
         case "latest": {
           const sortedProduct = queriedProduct.sort(
             (a, b) => b.createdAt - a.createdAt
