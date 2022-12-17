@@ -15,7 +15,7 @@ const { productValidator } = require("../utils/validator");
  */
 exports.allProduct = async (req, res, next) => {
   try {
-    const { page, perPage } = req.query;
+    const { page, perPage, sort } = req.query;
 
     const limit = perPage !== undefined ? perPage : 12;
     const pageFall = page !== undefined ? page - 1 : 0;
@@ -23,7 +23,59 @@ exports.allProduct = async (req, res, next) => {
     const allProduct = await Product.find()
       .limit(limit)
       .skip(limit * pageFall);
-
+    if (sort) {
+      switch (sort) {
+        case "low-high": {
+          const sortedProduct = allProduct.sort((a, b) => a.amount - b.amount);
+          return respondWithSuccess(
+            res,
+            { queriedProduct: sortedProduct, totalDoc: totalDoc.length },
+            "Sorted successfully",
+            StatusCodes.OK
+          );
+        }
+        case "high-low": {
+          const sortedProduct = allProduct.sort((a, b) => b.amount - a.amount);
+          return respondWithSuccess(
+            res,
+            { queriedProduct: sortedProduct, totalDoc: totalDoc.length },
+            "Sorted successfully",
+            StatusCodes.OK
+          );
+        }
+        // case "rating": {
+        //   const sortedProduct = allProduct.sort(
+        //     (a, b) =>
+        //       b.rating.reduce((bc, bd) => bc + bd) -
+        //       a.rating.reduce((ac, ad) => ac + ad)
+        //   );
+        //   return respondWithSuccess(
+        //     res,
+        //     sortedProduct,
+        //     "Sorted successfully",
+        //     StatusCodes.OK
+        //   );
+        // }
+        case "latest": {
+          const sortedProduct = allProduct.sort(
+            (a, b) => b.createdAt - a.createdAt
+          );
+          return respondWithSuccess(
+            res,
+            { queriedProduct: sortedProduct, totalDoc: totalDoc.length },
+            "Sorted successfully",
+            StatusCodes.OK
+          );
+        }
+        default:
+          return respondWithSuccess(
+            res,
+            { queriedProduct: sortedProduct, totalDoc: totalDoc.length },
+            "Sorted product fetched successfully",
+            StatusCodes.OK
+          );
+      }
+    }
     respondWithSuccess(
       res,
       { queriedProduct: allProduct, totalDoc: totalDoc.length },
@@ -67,7 +119,7 @@ exports.queryProduct = async (req, res, next) => {
           );
           return respondWithSuccess(
             res,
-            sortedProduct,
+            { queriedProduct: sortedProduct, totalDoc: DocCount.length },
             "Sorted successfully",
             StatusCodes.OK
           );
@@ -78,7 +130,7 @@ exports.queryProduct = async (req, res, next) => {
           );
           return respondWithSuccess(
             res,
-            sortedProduct,
+            { queriedProduct: sortedProduct, totalDoc: DocCount.length },
             "Sorted successfully",
             StatusCodes.OK
           );
@@ -102,7 +154,7 @@ exports.queryProduct = async (req, res, next) => {
           );
           return respondWithSuccess(
             res,
-            sortedProduct,
+            { queriedProduct: sortedProduct, totalDoc: DocCount.length },
             "Sorted successfully",
             StatusCodes.OK
           );
@@ -110,7 +162,7 @@ exports.queryProduct = async (req, res, next) => {
         default:
           return respondWithSuccess(
             res,
-            queriedProduct,
+            { queriedProduct: sortedProduct, totalDoc: DocCount.length },
             "Sorted product fetched successfully",
             StatusCodes.OK
           );
