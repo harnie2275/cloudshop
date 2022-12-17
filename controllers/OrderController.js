@@ -28,7 +28,7 @@ exports.placeOrder = async (req, res, next) => {
       return respondWithError(
         res,
         {},
-        newOrder.message,
+        "Something went wrong while create the order",
         StatusCodes.BAD_REQUEST
       );
     /**
@@ -96,7 +96,12 @@ exports.userCancelOrder = async (req, res, next) => {
       return respondWithError(res, {}, "order id is required");
     const order = await Order.findOne({ orderId: id, user: req.id });
     if (!order)
-      return respondWithError(res, {}, order.message, StatusCodes.BAD_REQUEST);
+      return respondWithError(
+        res,
+        {},
+        "no order was found",
+        StatusCodes.BAD_REQUEST
+      );
     if (order.status === "cancel") {
       respondWithError(
         res,
@@ -160,7 +165,12 @@ exports.adminCancelOrder = async (req, res, next) => {
       );
     const order = await Order.findOne({ orderId, user: userId });
     if (!order)
-      return respondWithError(res, {}, order.message, StatusCodes.BAD_REQUEST);
+      return respondWithError(
+        res,
+        {},
+        "no order was found",
+        StatusCodes.BAD_REQUEST
+      );
     if (order.status === "cancel")
       return respondWithError(
         res,
@@ -243,7 +253,7 @@ exports.adminUpdateOrder = async (req, res, next) => {
       return respondWithError(
         res,
         {},
-        updatedOrder.message,
+        "no order was found",
         StatusCodes.BAD_REQUEST
       );
     if (updatedOrder.status === "cancel")
@@ -302,7 +312,12 @@ exports.myOrder = async (req, res, next) => {
   try {
     const order = await Order.find({ user: req.id });
     if (!order)
-      return respondWithError(res, {}, order.message, StatusCodes.BAD_REQUEST);
+      return respondWithError(
+        res,
+        {},
+        "no orders were found",
+        StatusCodes.BAD_REQUEST
+      );
     respondWithSuccess(
       res,
       order,
@@ -320,7 +335,32 @@ exports.myOrder = async (req, res, next) => {
  * @param {*} res a single order
  * @param {*} next
  */
-exports.queryOrderById = async (req, res, next) => {};
+exports.queryOrderById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return respondWithError(
+        res,
+        {},
+        "no order id was found",
+        StatusCodes.BAD_REQUEST
+      );
+    }
+    const order = await Order.findOne({ orderId: id });
+    if (!order) {
+      respondWithError(res, {}, "no order was found", StatusCodes.BAD_REQUEST);
+      return;
+    }
+    respondWithSuccess(
+      res,
+      order,
+      `order with id ${order.orderId}`,
+      StatusCodes.OK
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};
 
 /**
  *

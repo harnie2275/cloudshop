@@ -57,6 +57,12 @@ const ProductSchema = new Schema(
     productTag: {
       type: Array,
     },
+    review: {
+      type: Array,
+    },
+    rating: {
+      type: Array,
+    },
   },
   {
     timestamps: true,

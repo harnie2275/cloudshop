@@ -47,6 +47,9 @@ const OrderSchema = new Schema(
     paymentRef: {
       type: String,
     },
+    deliveryNote: {
+      type: String,
+    },
   },
   {
     timestamps: true,

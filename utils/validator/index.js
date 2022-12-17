@@ -67,6 +67,7 @@ const orderValidator = (data) => {
     items: JOI.array().required(),
     paymentMethod: JOI.string().required(),
     paymentRef: JOI.string(),
+    deliveryNote: JOI.string(),
   });
 
   return schema.validate(data);

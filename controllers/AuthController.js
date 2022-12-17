@@ -312,7 +312,7 @@ exports.resetPasswordLink = async (req, res, next) => {
       return respondWithError(
         res,
         {},
-        `${randomToken.message}`,
+        `something went wrong - TOKEN911`,
         StatusCodes.EXPECTATION_FAILED
       );
     randomToken.save();

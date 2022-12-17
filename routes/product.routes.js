@@ -6,6 +6,7 @@ const {
   queryProduct,
   productQuery,
   allProduct,
+  addProductReview,
 } = require("../controllers/ProductController");
 const { authMiddle } = require("../middleware/authMiddle");
 const { MultiPhotoConverter } = require("../middleware/MultiPhotoConverter");
@@ -16,5 +17,6 @@ router.post("/add", authMiddle, MultiPhotoConverter, addProduct);
 router.get("/all", queryProduct);
 router.get("/item", productQuery);
 router.get("/", allProduct);
+router.post("/:id/review", authMiddle, addProductReview);
 
 module.exports = router;

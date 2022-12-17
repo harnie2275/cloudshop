@@ -255,3 +255,47 @@ exports.productQuery = async (req, res, next) => {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
 };
+
+exports.addProductReview = async (req, res, next) => {
+  try {
+    const { comment, rating } = req.body;
+    const { id } = req.params;
+    if (!comment || !rating)
+      return respondWithError(
+        res,
+        {},
+        "comment and rating are required",
+        StatusCodes.BAD_REQUEST
+      );
+    const product = await Product.findById(id);
+    if (!product)
+      return respondWithError(
+        res,
+        {},
+        "no product was found",
+        StatusCodes.BAD_REQUEST
+      );
+
+    product.review = product.review.filter(
+      (aReview) => aReview.user !== req.id
+    );
+    product.rating = product.rating.filter(
+      (aReview) => aReview.user !== req.id
+    );
+    const review = {
+      user: req.id,
+      comment: comment,
+    };
+    product.review = [...product.review, review];
+    product.rating = [...product.rating, { rating: rating, user: req.id }];
+    product.save();
+    respondWithSuccess(
+      res,
+      product,
+      "Your review has been added",
+      StatusCodes.OK
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};
