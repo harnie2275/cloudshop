@@ -29,29 +29,29 @@ const { use } = require("passport");
 exports.register = async (req, res, next) => {
   try {
     const { email, password, phone } = req.body;
-    if (!email || !password || !phone) {
-      if (!email)
-        return respondWithError(
-          res,
-          {},
-          "Email address is required",
-          StatusCodes.BAD_REQUEST
-        );
-      if (!phone)
-        return respondWithError(
-          res,
-          {},
-          "Phone number is required",
-          StatusCodes.BAD_REQUEST
-        );
-      if (!password)
-        return respondWithError(
-          res,
-          {},
-          "Password is required",
-          StatusCodes.BAD_REQUEST
-        );
-    }
+    // if (!email || !password || !phone) {
+    //   if (!email)
+    //     return respondWithError(
+    //       res,
+    //       {},
+    //       "Email address is required",
+    //       StatusCodes.BAD_REQUEST
+    //     );
+    //   if (!phone)
+    //     return respondWithError(
+    //       res,
+    //       {},
+    //       "Phone number is required",
+    //       StatusCodes.BAD_REQUEST
+    //     );
+    //   if (!password)
+    //     return respondWithError(
+    //       res,
+    //       {},
+    //       "Password is required",
+    //       StatusCodes.BAD_REQUEST
+    //     );
+    // }
     const { error } = regValidator({
       email: email,
       password: password,

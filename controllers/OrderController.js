@@ -20,6 +20,14 @@ const { orderValidator } = require("../utils/validator");
  * @param {*} next
  */
 exports.placeOrder = async (req, res, next) => {
+  const { error } = orderValidator(req.body);
+  if (error)
+    return respondWithError(
+      res,
+      {},
+      error.details?.[0].message,
+      StatusCodes.BAD_REQUEST
+    );
   try {
     const restructedObj = { orderId: randomize("0", 8), ...req.body };
     const newOrder = await Order.create({ ...restructedObj });
