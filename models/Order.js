@@ -16,7 +16,13 @@ const OrderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["processing", "cancel", "delivered", "out for delivery"],
+      enum: [
+        "processing",
+        "cancel",
+        "delivered",
+        "out for delivery",
+        "confirmed",
+      ],
       default: "processing",
     },
     billingAddress: {

@@ -61,12 +61,12 @@ const productValidator = (data) => {
 
 const orderValidator = (data) => {
   const schema = JOI.object({
-    // orderId: JOI.string().required(),
     billingAddress: JOI.object().required(),
     user: JOI.string().required(),
     totalAmount: JOI.number().required(),
     items: JOI.array().required(),
     paymentMethod: JOI.string().required(),
+    paymentRef: JOI.string(),
   });
 
   return schema.validate(data);
