@@ -15,7 +15,14 @@ const { productValidator } = require("../utils/validator");
  */
 exports.allProduct = async (req, res, next) => {
   try {
-    const allProduct = await Product.find();
+    const { page, perPage } = req.query;
+
+    const limit = perPage || 10;
+    const pageFall = page || 1;
+    const allProduct = await Product.find()
+      .limit(limit)
+      .skip(limit * pageFall);
+
     respondWithSuccess(
       res,
       allProduct,
@@ -36,11 +43,20 @@ exports.allProduct = async (req, res, next) => {
  */
 exports.queryProduct = async (req, res, next) => {
   try {
-    const { category, sort } = req.query;
+    const { category, sort, page, perPage } = req.query;
+
+    const limit = perPage !== undefined ? perPage : 10;
+    const pageFall = page !== undefined ? page - 1 : 0;
+
+    const DocCount = await Product.find({
+      "productCategory.stream": category,
+    });
 
     const queriedProduct = await Product.find({
       "productCategory.stream": category,
-    });
+    })
+      .limit(limit)
+      .skip(limit * pageFall);
 
     if (sort) {
       switch (sort) {
@@ -102,7 +118,7 @@ exports.queryProduct = async (req, res, next) => {
 
     respondWithSuccess(
       res,
-      queriedProduct,
+      { queriedProduct, totalDoc: DocCount.length },
       "Product has been fetched",
       StatusCodes.OK
     );
