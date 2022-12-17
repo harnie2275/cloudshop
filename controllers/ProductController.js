@@ -17,15 +17,16 @@ exports.allProduct = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
 
-    const limit = perPage || 10;
-    const pageFall = page || 1;
+    const limit = perPage !== undefined ? perPage : 12;
+    const pageFall = page !== undefined ? page - 1 : 0;
+    const totalDoc = await Product.find();
     const allProduct = await Product.find()
       .limit(limit)
       .skip(limit * pageFall);
 
     respondWithSuccess(
       res,
-      allProduct,
+      { queriedProduct: allProduct, totalDoc: totalDoc.length },
       "All product fetched successfully",
       StatusCodes.OK
     );
@@ -45,7 +46,7 @@ exports.queryProduct = async (req, res, next) => {
   try {
     const { category, sort, page, perPage } = req.query;
 
-    const limit = perPage !== undefined ? perPage : 10;
+    const limit = perPage !== undefined ? perPage : 12;
     const pageFall = page !== undefined ? page - 1 : 0;
 
     const DocCount = await Product.find({
