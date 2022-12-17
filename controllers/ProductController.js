@@ -36,10 +36,57 @@ exports.allProduct = async (req, res, next) => {
  */
 exports.queryProduct = async (req, res, next) => {
   try {
-    const { category } = req.query;
+    const { category, sort } = req.query;
+
     const queriedProduct = await Product.find({
-      "productCategory.wordPhrase": category,
+      "productCategory.stream": category,
     });
+
+    if (sort) {
+      switch (sort) {
+        case "low-high": {
+          const sortedProduct = queriedProduct.sort(
+            (a, b) => a.amount - b.amount
+          );
+          return respondWithSuccess(
+            res,
+            sortedProduct,
+            "Sorted successfully",
+            StatusCodes.OK
+          );
+        }
+        case "high-low": {
+          const sortedProduct = queriedProduct.sort(
+            (a, b) => b.amount - a.amount
+          );
+          return respondWithSuccess(
+            res,
+            sortedProduct,
+            "Sorted successfully",
+            StatusCodes.OK
+          );
+        }
+        case "latest": {
+          const sortedProduct = queriedProduct.sort(
+            (a, b) => b.createdAt - a.createdAt
+          );
+          return respondWithSuccess(
+            res,
+            sortedProduct,
+            "Sorted successfully",
+            StatusCodes.OK
+          );
+        }
+        default:
+          return respondWithSuccess(
+            res,
+            queriedProduct,
+            "Sorted product fetched successfully",
+            StatusCodes.OK
+          );
+      }
+    }
+
     respondWithSuccess(
       res,
       queriedProduct,
