@@ -29,6 +29,7 @@ const { use } = require("passport");
 exports.register = async (req, res, next) => {
   try {
     const { email, password, phone } = req.body;
+    const { redirect_url } = req.query;
     // if (!email || !password || !phone) {
     //   if (!email)
     //     return respondWithError(
@@ -82,7 +83,9 @@ exports.register = async (req, res, next) => {
       token: crypto.randomBytes(32).toString("hex"),
     }).save();
 
-    const link = `${WEB_APP_URL}/activate?token=${randomToken.token}`;
+    const link = `${WEB_APP_URL}/activate?token=${
+      randomToken.token
+    }&redirect_url=${redirect_url ? redirect_url : ""}`;
     /**
      * @return send link to user mail
      */
@@ -105,7 +108,10 @@ exports.register = async (req, res, next) => {
 
     return respondWithSuccess(
       res,
-      { token, tempoLink: link },
+      {
+        token,
+        tempoLink: link,
+      },
       `A mail has been sent to ${createdUser.email}, kindly verify your account`,
       StatusCodes.OK
     );
@@ -239,6 +245,7 @@ exports.activateAccount = async (req, res, next) => {
  */
 exports.resendActivateLink = async (req, res, next) => {
   try {
+    const { redirect_url } = req.user;
     const user = await User.findById(req.id);
     if (!user)
       return respondWithError(
@@ -261,7 +268,9 @@ exports.resendActivateLink = async (req, res, next) => {
       token: crypto.randomBytes(32).toString("hex"),
     }).save();
 
-    const link = `${WEB_APP_URL}/activate?token=${randomToken.token}`;
+    const link = `${WEB_APP_URL}/activate?token=${
+      randomToken.token
+    }&redirect_url=${redirect_url ? redirect_url : ""}`;
     return respondWithSuccess(
       res,
       { tempoLink: link },
