@@ -94,10 +94,7 @@ exports.register = async (req, res, next) => {
      * @return generate token and endpoint response
      */
     const token = await createdUser.generateToken();
-    if (
-      req.query?.fromCheckout !== undefined &&
-      req.query.fromCheckout === true
-    ) {
+    if (req.query?.fromCheckout !== undefined) {
       return respondWithSuccess(
         res,
         { token, tempoLink: link, userId: createdUser._id },
