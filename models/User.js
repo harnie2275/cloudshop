@@ -15,10 +15,16 @@ const UserSchema = new Schema(
       trim: true,
       min: 3,
     },
+    phone: {
+      type: String,
+      required: [true, "phone is required"],
+      unique: true,
+      min: 11,
+    },
     email: {
       type: String,
       required: [true, "email is required"],
-      unique: [true, "user with the given email already exist"],
+      unique: [true, "This email has been registered already"],
     },
     company: {
       type: String,
@@ -51,12 +57,6 @@ const UserSchema = new Schema(
     },
     verified: {
       type: Boolean,
-    },
-    phone: {
-      type: Number,
-      min: 11,
-      unique: [true, "user with the given number already exist"],
-      required: [true, "phone is required"],
     },
   },
   {
@@ -91,6 +91,20 @@ UserSchema.statics.findOneOrCreate = function findOneOrCreate(condition, doc) {
       });
   });
 };
+
+UserSchema.post("save", function (error, doc, next) {
+  // if (error.name === "MongoServerError" && error.code === 11000) {
+  if (error.code === 11000) {
+    if (Object.keys(error.keyValue).includes("phone")) {
+      next(new Error(`${error.keyValue.phone} has already been registered`));
+    }
+    if (Object.keys(error.keyValue).includes("email")) {
+      next(new Error(`${error.keyValue.email} has already been registered`));
+    }
+  } else {
+    next(error);
+  }
+});
 
 /**
  * @return encrypted password
