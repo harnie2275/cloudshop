@@ -242,7 +242,7 @@ exports.activateAccount = async (req, res, next) => {
  */
 exports.resendActivateLink = async (req, res, next) => {
   try {
-    const { redirect_url } = req.user;
+    const { redirect_url } = req.query;
     const user = await User.findById(req.id);
     if (!user)
       return respondWithError(
