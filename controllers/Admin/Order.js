@@ -38,14 +38,14 @@ exports.adminGetOrder = async (req, res, next) => {
 
 exports.adminQueryOrder = async (req, res, next) => {
   try {
-    if (!req.query.id)
+    if (!req.params.id)
       return respondWithError(
         res,
         {},
         "no id was found",
         StatusCodes.BAD_REQUEST
       );
-    const order = await Order.findOne({ orderId: req.query.id });
+    const order = await Order.findOne({ orderId: req.params.id });
     if (!order)
       return respondWithError(
         res,
