@@ -15,7 +15,7 @@ const router = express.Router();
 router.route("/auth/login").post(login);
 
 // todo: product and catogory
-router.route("/category/add").post(authMiddle, addCategory);
+router.post("/category/add", authMiddle, addCategory);
 router.post("/product/add", authMiddle, MultiPhotoConverter, addProduct);
 
 //todo: order
