@@ -51,6 +51,7 @@ const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const productRoutes = require("./routes/product.routes");
 const orderRoutes = require("./routes/order.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 /**
  * @return routes
@@ -76,6 +77,7 @@ app.use(`${API_VERSION}/auth`, authRoutes);
 app.use(`${API_VERSION}/user`, userRoutes);
 app.use(`${API_VERSION}/product`, productRoutes);
 app.use(`${API_VERSION}/order`, orderRoutes);
+app.use(`${API_VERSION}/admin`, adminRoutes);
 
 /**
  * @return next error

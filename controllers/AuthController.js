@@ -28,31 +28,9 @@ const { use } = require("passport");
  */
 exports.register = async (req, res, next) => {
   try {
-    const { email, password, phone } = req.body;
+    const { email, password, phone, role } = req.body;
     const { redirect_url } = req.query;
-    // if (!email || !password || !phone) {
-    //   if (!email)
-    //     return respondWithError(
-    //       res,
-    //       {},
-    //       "Email address is required",
-    //       StatusCodes.BAD_REQUEST
-    //     );
-    //   if (!phone)
-    //     return respondWithError(
-    //       res,
-    //       {},
-    //       "Phone number is required",
-    //       StatusCodes.BAD_REQUEST
-    //     );
-    //   if (!password)
-    //     return respondWithError(
-    //       res,
-    //       {},
-    //       "Password is required",
-    //       StatusCodes.BAD_REQUEST
-    //     );
-    // }
+
     const { error } = regValidator({
       email: email,
       password: password,
@@ -66,7 +44,18 @@ exports.register = async (req, res, next) => {
         StatusCodes.BAD_REQUEST
       );
     }
-    const createdUser = await User.findOneOrCreate({ email }, { ...req.body });
+    if (["admin", "editor", "sale rep", "marketing"].includes(role))
+      return respondWithError(
+        res,
+        {},
+        "Not permitted to perform such task",
+        StatusCodes.UNAUTHORIZED
+      );
+    con;
+    const createdUser = await User.findOneOrCreate(
+      { email },
+      { ...req.body, email: email.toLowerCase() }
+    );
     if (!createdUser)
       return respondWithError(
         res,
@@ -133,6 +122,13 @@ exports.login = async (req, res, next) => {
       return respondWithError(res, {}, error?.message, StatusCodes.BAD_REQUEST);
     }
     const user = await User.findOne({ email }).select("+password");
+    if (["admin", "editor", "sale rep", "marketing"].includes(user.role))
+      return respondWithError(
+        res,
+        {},
+        "Not permitted to perform such task",
+        StatusCodes.UNAUTHORIZED
+      );
     if (!user)
       return respondWithError(
         res,
@@ -141,9 +137,8 @@ exports.login = async (req, res, next) => {
         StatusCodes.NOT_ACCEPTABLE
       );
 
-    /**
-     * @param {*} comparePassword validate password against database
-     */
+    // TODO:  verify password
+
     const correctPass = await user.comparePassword(password);
     if (!correctPass)
       return respondWithError(
@@ -152,11 +147,8 @@ exports.login = async (req, res, next) => {
         "password is incorrect",
         StatusCodes.NOT_ACCEPTABLE
       );
-    /**
-     * @param {*} generateToken
-     *  @param {*}
-     * @return generate token and endpoint response
-     */
+
+    // TODO:  generate JWT token
 
     const token = await user.generateToken();
 
