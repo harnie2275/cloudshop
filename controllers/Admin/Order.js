@@ -36,6 +36,34 @@ exports.adminGetOrder = async (req, res, next) => {
   }
 };
 
+exports.adminQueryOrder = async (req, res, next) => {
+  try {
+    if (!req.query.id)
+      return respondWithError(
+        res,
+        {},
+        "no id was found",
+        StatusCodes.BAD_REQUEST
+      );
+    const order = await Order.findOne({ orderId: req.query.id });
+    if (!order)
+      return respondWithError(
+        res,
+        {},
+        "no orders were found",
+        StatusCodes.BAD_REQUEST
+      );
+    respondWithSuccess(
+      res,
+      order,
+      "Orders was fetched successfully",
+      StatusCodes.OK
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};
+
 /**
  *
  * @param {*} req.body receive an order id whose order status is not delivered from an admin or sales rep

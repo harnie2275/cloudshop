@@ -4,9 +4,10 @@ const {
   adminCancelOrder,
   adminUpdateOrder,
   adminGetOrder,
+  adminQueryOrder,
 } = require("../controllers/Admin/Order");
 const { addProduct, addCategory } = require("../controllers/Admin/Product");
-const { authMiddle } = require("../middleware/authMiddle");
+const { adminMiddle } = require("../middleware/adminMiddle");
 const { MultiPhotoConverter } = require("../middleware/MultiPhotoConverter");
 
 const router = express.Router();
@@ -15,12 +16,13 @@ const router = express.Router();
 router.route("/auth/login").post(login);
 
 // todo: product and catogory
-router.post("/category/add", authMiddle, addCategory);
-router.post("/product/add", authMiddle, MultiPhotoConverter, addProduct);
+router.post("/category/add", adminMiddle, addCategory);
+router.post("/product/add", adminMiddle, MultiPhotoConverter, addProduct);
 
 //todo: order
-router.route("/order/").get(authMiddle, adminGetOrder);
-router.route("/order/cancel").patch(authMiddle, adminCancelOrder);
-router.route("/order/:id/update").patch(authMiddle, adminUpdateOrder);
+router.route("/order/").get(adminMiddle, adminGetOrder);
+router.route("/order/:id").get(adminMiddle, adminQueryOrder);
+router.route("/order/cancel").patch(adminMiddle, adminCancelOrder);
+router.route("/order/:id/update").patch(adminMiddle, adminUpdateOrder);
 
 module.exports = router;
