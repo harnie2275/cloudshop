@@ -17,7 +17,13 @@ const {
  */
 exports.adminGetOrder = async (req, res, next) => {
   try {
-    const order = await Order.find();
+    const { perPage, page } = req.query;
+    const limit = perPage ? perPage : 15;
+    const skip = page ? page - 1 : 0;
+    const totalDoc = await (await Order.find()).length;
+    const order = await Order.find()
+      .limit(limit)
+      .skip(skip * limit);
     if (!order)
       return respondWithError(
         res,
@@ -27,7 +33,7 @@ exports.adminGetOrder = async (req, res, next) => {
       );
     respondWithSuccess(
       res,
-      order,
+      { order, totalDoc },
       "Orders was fetched successfully",
       StatusCodes.OK
     );

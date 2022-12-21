@@ -26,8 +26,16 @@ exports.adminGetUsers = async (req, res, next) => {
     const { perPage, page } = req.query;
     const limit = perPage ? perPage : 20;
     const skip = page ? page - 1 : 0;
-    const user = await User.find().limit(limit).skip(skip);
-    respondWithSuccess(res, user, "user has been fetched", StatusCodes.OK);
+    const totalDoc = await (await User.find()).length;
+    const user = await User.find()
+      .limit(limit)
+      .skip(skip * limit);
+    respondWithSuccess(
+      res,
+      { user, totalDoc },
+      "user has been fetched",
+      StatusCodes.OK
+    );
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
