@@ -63,6 +63,11 @@ const ProductSchema = new Schema(
     rating: {
       type: Array,
     },
+    addedBy: {
+      type: String,
+      required: true,
+      default: "",
+    },
   },
   {
     timestamps: true,

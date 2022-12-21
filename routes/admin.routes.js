@@ -1,6 +1,10 @@
 const express = require("express");
 const { login } = require("../controllers/Admin/Auth");
-const { getAllImage } = require("../controllers/Admin/Media");
+const {
+  getAllImage,
+  addImage,
+  deleteImage,
+} = require("../controllers/Admin/Media");
 const {
   adminCancelOrder,
   adminUpdateOrder,
@@ -43,6 +47,10 @@ router.route("/order/:id/update").patch(adminMiddle, adminUpdateOrder);
 router.route("/order/product/:id").get(adminMiddle, adminQueryOrderByProduct);
 
 // todo: media
-router.route("/media").get(adminMiddle, getAllImage);
+router
+  .route("/media")
+  .get(adminMiddle, getAllImage)
+  .post(adminMiddle, addImage)
+  .delete(adminMiddle, deleteImage);
 
 module.exports = router;
