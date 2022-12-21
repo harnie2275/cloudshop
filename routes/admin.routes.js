@@ -5,6 +5,7 @@ const {
   adminUpdateOrder,
   adminGetOrder,
   adminQueryOrder,
+  adminQueryOrderByProduct,
 } = require("../controllers/Admin/Order");
 const { addProduct, addCategory } = require("../controllers/Admin/Product");
 const { adminQueryUser, adminGetUsers } = require("../controllers/Admin/User");
@@ -29,5 +30,6 @@ router.route("/order/").get(adminMiddle, adminGetOrder);
 router.route("/order/:id").get(adminMiddle, adminQueryOrder);
 router.route("/order/cancel").patch(adminMiddle, adminCancelOrder);
 router.route("/order/:id/update").patch(adminMiddle, adminUpdateOrder);
+router.route("/order/product/:id").get(adminMiddle, adminQueryOrderByProduct);
 
 module.exports = router;

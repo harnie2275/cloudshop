@@ -251,3 +251,16 @@ const updateInventory = async (item, action) => {
     return { error: true, message: error.message };
   }
 };
+
+exports.adminQueryOrderByProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const productOrders = await Order.find({
+      items: { $elemMatch: { id: id } },
+    });
+
+    respondWithSuccess(res, productOrders, "successful", StatusCodes.OK);
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};
