@@ -224,7 +224,7 @@ exports.adminUpdateOrder = async (req, res, next) => {
           res,
           updatedOrder,
           "order has been updated",
-          StatusCodes.BAD_REQUEST
+          StatusCodes.OK
         );
       }
     });
