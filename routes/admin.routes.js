@@ -7,6 +7,7 @@ const {
   adminQueryOrder,
 } = require("../controllers/Admin/Order");
 const { addProduct, addCategory } = require("../controllers/Admin/Product");
+const { adminQueryUser, adminGetUsers } = require("../controllers/Admin/User");
 const { adminMiddle } = require("../middleware/adminMiddle");
 const { MultiPhotoConverter } = require("../middleware/MultiPhotoConverter");
 
@@ -14,6 +15,10 @@ const router = express.Router();
 
 // todo: auth
 router.route("/auth/login").post(login);
+
+// todo: user
+router.route("/user").get(adminMiddle, adminGetUsers);
+router.route("/user/:id").get(adminMiddle, adminQueryUser);
 
 // todo: product and catogory
 router.post("/category/add", adminMiddle, addCategory);
