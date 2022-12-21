@@ -161,3 +161,58 @@ exports.addCategory = async (req, res, next) => {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
 };
+
+exports.getCategoryDetail = async (req, res, next) => {
+  try {
+    const category = await Category.findOne({ wordPhrase: req.params.slug });
+    if (!category)
+      return respondWithError(
+        res,
+        {},
+        "no category found",
+        StatusCodes.BAD_REQUEST
+      );
+    respondWithSuccess(
+      res,
+      category,
+      "category detail fetched successfully",
+      StatusCodes.OK
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};
+
+exports.editCategory = async (req, res, next) => {
+  try {
+    const category = await Category.findOne({ wordPhrase: req.params.slug });
+    if (!category)
+      return respondWithError(
+        res,
+        {},
+        "no category found",
+        StatusCodes.BAD_REQUEST
+      );
+    if (Object.keys(req.body).includes("wordPhrase"))
+      return respondWithError(
+        res,
+        {},
+        "slug cannot be changed",
+        StatusCodes.BAD_REQUEST
+      );
+    Object.entries(req.body).forEach((anAction, item) => {
+      category[anAction[0]] = anAction[1];
+      if (item === Object.entries(req.body).length - 1) {
+        category.save();
+        respondWithSuccess(
+          res,
+          updatedOrder,
+          "order has been updated",
+          StatusCodes.OK
+        );
+      }
+    });
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};
