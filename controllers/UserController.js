@@ -6,6 +6,7 @@ const { respondWithError, respondWithSuccess } = require("../utils/response");
 const crypto = require("crypto");
 const mailer = require("../utils/mailer");
 const { activateAccount } = require("../utils/helper/template/activateAccount");
+const Ledger = require("../models/Ledger");
 
 /**
  *
@@ -26,6 +27,10 @@ exports.profile = async (req, res, next) => {
       );
 
     // todo: create ledger if one doesn't exist
+
+    const hasLedger = await Ledger.findOne({ user: req.id });
+
+    if (!hasLedger) await Ledger.create({ user: req.id });
 
     const token = await user.generateToken();
 
