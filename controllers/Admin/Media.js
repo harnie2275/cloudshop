@@ -7,7 +7,7 @@ const {
 
 exports.getAllImage = async (req, res, next) => {
   try {
-    const allCloudImage = await cloudinary.api.resources();
+    const allCloudImage = await cloudinary.api.resources({ max_results: 500 });
     if (allCloudImage.error)
       respondWithError(
         res,
