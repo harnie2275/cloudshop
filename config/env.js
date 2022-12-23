@@ -13,4 +13,5 @@ module.exports = {
   MAIL_ADDRESS: process.env.MAIL_ADDRESS,
   MAIL_PASSWORD: process.env.MAIL_PASSWORD,
   MAIL_HOST: process.env.MAIL_HOST,
+  PAYSTACK_SECRET: process.env.PAYSTACK_SECRET,
 };

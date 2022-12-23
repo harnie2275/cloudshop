@@ -28,7 +28,8 @@ exports.placeOrder = async (req, res, next) => {
       StatusCodes.BAD_REQUEST
     );
   try {
-    const restructedObj = { orderId: randomize("0", 8), ...req.body };
+    const newBody = req.newBody !== undefined ? req.newBody : req.body;
+    const restructedObj = { orderId: randomize("0", 8), ...newBody };
     const newOrder = await Order.create({ ...restructedObj });
 
     if (!newOrder)

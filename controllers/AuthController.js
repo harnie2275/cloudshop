@@ -9,6 +9,7 @@ const randomize = require("randomatic");
 const { use } = require("passport");
 const { activateAccount } = require("../utils/helper/template/activateAccount");
 const mailer = require("../utils/mailer");
+const Ledger = require("../models/Ledger");
 
 /**
  *
@@ -73,6 +74,8 @@ exports.register = async (req, res, next) => {
       userId: createdUser._id,
       token: crypto.randomBytes(32).toString("hex"),
     }).save();
+
+    await Ledger.create({ user: createdUser._id });
 
     const link = `${WEB_APP_URL}/activate?token=${
       randomToken.token

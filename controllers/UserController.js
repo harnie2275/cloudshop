@@ -25,6 +25,8 @@ exports.profile = async (req, res, next) => {
         StatusCodes.BAD_REQUEST
       );
 
+    // todo: create ledger if one doesn't exist
+
     const token = await user.generateToken();
 
     if (user.verified === undefined || user.verified === false) {
