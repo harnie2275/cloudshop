@@ -9,6 +9,10 @@ const randomize = require("randomatic");
 const { ADMIN_APP_URL } = require("../../config/env");
 const crypto = require("crypto");
 const Token = require("../../models/Token");
+const {
+  activateAccount,
+} = require("../../utils/helper/template/activateAccount");
+const mailer = require("../../utils/mailer");
 
 exports.login = async (req, res, next) => {
   try {
@@ -105,12 +109,18 @@ exports.registerStaff = async (req, res, next) => {
     // todo: send email
 
     const link = `${ADMIN_APP_URL}/setPassword?token=${randomToken.token}`;
-    respondWithSuccess(
-      res,
-      { tempoLink: link },
-      "Account has been created",
-      StatusCodes.OK
-    );
+
+    const MESSAGE = activateAccount(link, admin.email);
+    /**
+     * @return send link to user mail
+     */
+    mailer({
+      message: MESSAGE,
+      email: admin.email,
+      subject: "ADMIN ACCOUNT COMPLETION",
+    });
+
+    respondWithSuccess(res, {}, "Account has been created", StatusCodes.OK);
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
