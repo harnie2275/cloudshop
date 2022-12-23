@@ -68,6 +68,10 @@ const ProductSchema = new Schema(
       required: true,
       default: "",
     },
+    regularPrice: {
+      type: Number,
+      default: this.amount,
+    },
   },
   {
     timestamps: true,

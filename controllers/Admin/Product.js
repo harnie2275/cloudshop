@@ -206,7 +206,7 @@ exports.editCategory = async (req, res, next) => {
         category.save();
         respondWithSuccess(
           res,
-          updatedOrder,
+          category,
           "order has been updated",
           StatusCodes.OK
         );
