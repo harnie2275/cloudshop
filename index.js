@@ -52,6 +52,8 @@ const userRoutes = require("./routes/user.routes");
 const productRoutes = require("./routes/product.routes");
 const orderRoutes = require("./routes/order.routes");
 const adminRoutes = require("./routes/admin.routes");
+const { activateAccount } = require("./utils/helper/template/activateAccount");
+const mailer = require("./utils/mailer");
 
 /**
  * @return routes
@@ -72,6 +74,18 @@ app.get(`${API_VERSION}/`, function (req, res, next) {
         </div>
         
     `);
+});
+app.get(`${API_VERSION}/template`, function (req, res, next) {
+  const template = activateAccount(
+    "http://www.w3.org/1999/xhtml",
+    req.query?.email
+  );
+  mailer({
+    message: template,
+    email: req.query.email,
+    subject: "EMAIL ACCOUNT VERIFICATION",
+  });
+  return res.send(template);
 });
 app.use(`${API_VERSION}/auth`, authRoutes);
 app.use(`${API_VERSION}/user`, userRoutes);

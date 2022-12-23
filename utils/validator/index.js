@@ -18,6 +18,16 @@ const regValidator = (data) => {
   return schema.validate(data);
 };
 
+const regAdminValidator = (data) => {
+  const schema = JOI.object({
+    email: JOI.string().required().email(),
+    role: JOI.string().required(),
+    phone: JOI.string().required().min(11).max(20),
+  });
+
+  return schema.validate(data);
+};
+
 /**
  * @param {{
  *  email,
@@ -78,4 +88,5 @@ module.exports = {
   loginValidator,
   productValidator,
   orderValidator,
+  regAdminValidator,
 };

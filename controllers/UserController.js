@@ -4,6 +4,8 @@ const Token = require("../models/Token");
 const User = require("../models/User");
 const { respondWithError, respondWithSuccess } = require("../utils/response");
 const crypto = require("crypto");
+const mailer = require("../utils/mailer");
+const { activateAccount } = require("../utils/helper/template/activateAccount");
 
 /**
  *
@@ -34,9 +36,19 @@ exports.profile = async (req, res, next) => {
       }).save();
 
       const link = `${WEB_APP_URL}/activate?token=${randomToken.token}`;
+
+      const MESSAGE = activateAccount(link, user.email);
+      /**
+       * @return send link to user mail
+       */
+      mailer({
+        message: MESSAGE,
+        email: user.email,
+        subject: "EMAIL ACCOUNT VERIFICATION",
+      });
       return respondWithSuccess(
         res,
-        { tempoLink: link, unverified: true },
+        { token, unverified: true },
         `Verify your email address, an email has been sent to ${user.email}`,
         StatusCodes.OK
       );

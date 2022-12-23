@@ -1,5 +1,5 @@
 const express = require("express");
-const { login } = require("../controllers/Admin/Auth");
+const { login, registerStaff } = require("../controllers/Admin/Auth");
 const {
   getAllImage,
   addImage,
@@ -26,6 +26,7 @@ const router = express.Router();
 
 // todo: auth
 router.route("/auth/login").post(login);
+router.route("/auth/staff").post(adminMiddle, registerStaff);
 
 // todo: user
 router.route("/user").get(adminMiddle, adminGetUsers);

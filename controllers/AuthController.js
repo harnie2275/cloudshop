@@ -7,6 +7,8 @@ const crypto = require("crypto");
 const { regValidator, loginValidator } = require("../utils/validator");
 const randomize = require("randomatic");
 const { use } = require("passport");
+const { activateAccount } = require("../utils/helper/template/activateAccount");
+const mailer = require("../utils/mailer");
 
 /**
  *
@@ -51,7 +53,7 @@ exports.register = async (req, res, next) => {
         "Not permitted to perform such task",
         StatusCodes.UNAUTHORIZED
       );
-    con;
+
     const createdUser = await User.findOneOrCreate(
       { email },
       { ...req.body, email: email.toLowerCase() }
@@ -75,10 +77,15 @@ exports.register = async (req, res, next) => {
     const link = `${WEB_APP_URL}/activate?token=${
       randomToken.token
     }&redirect_url=${redirect_url ? redirect_url : ""}`;
+    const MESSAGE = activateAccount(link, req.body.email);
     /**
      * @return send link to user mail
      */
-
+    mailer({
+      message: MESSAGE,
+      email: req.body.email,
+      subject: "EMAIL ACCOUNT VERIFICATION",
+    });
     /**
      * @return generate token and endpoint response
      */
@@ -86,7 +93,7 @@ exports.register = async (req, res, next) => {
     if (req.query?.fromCheckout !== undefined) {
       return respondWithSuccess(
         res,
-        { token, tempoLink: link, userId: createdUser._id },
+        { token, userId: createdUser._id },
         `A mail has been sent to ${createdUser.email}, kindly verify your account`,
         StatusCodes.OK
       );
@@ -96,7 +103,6 @@ exports.register = async (req, res, next) => {
       res,
       {
         token,
-        tempoLink: link,
       },
       `A mail has been sent to ${createdUser.email}, kindly verify your account`,
       StatusCodes.OK
@@ -161,9 +167,19 @@ exports.login = async (req, res, next) => {
       }).save();
 
       const link = `${WEB_APP_URL}/activate?token=${randomToken.token}`;
+
+      const MESSAGE = activateAccount(link, req.body.email);
+      /**
+       * @return send link to user mail
+       */
+      mailer({
+        message: MESSAGE,
+        email: req.body.email,
+        subject: "EMAIL ACCOUNT VERIFICATION",
+      });
       return respondWithSuccess(
         res,
-        { token, tempoLink: link, unverified: true },
+        { token, unverified: true },
         `Verify your email address, an email has been sent to ${user.email}`,
         StatusCodes.OK
       );
@@ -260,9 +276,20 @@ exports.resendActivateLink = async (req, res, next) => {
     const link = `${WEB_APP_URL}/activate?token=${
       randomToken.token
     }&redirect_url=${redirect_url ? redirect_url : ""}`;
+
+    const MESSAGE = activateAccount(link, user.email);
+    /**
+     * @return send link to user mail
+     */
+    mailer({
+      message: MESSAGE,
+      email: user.email,
+      subject: "EMAIL ACCOUNT VERIFICATION",
+    });
+
     return respondWithSuccess(
       res,
-      { tempoLink: link },
+      {},
       `Link has been send to your email address - ${user.email}`,
       StatusCodes.OK
     );
