@@ -25,6 +25,8 @@ const regAdminValidator = (data) => {
     email: JOI.string().required().email(),
     role: JOI.string().required(),
     phone: JOI.string().required().min(11).max(20),
+    firstname: JOI.string(),
+    lastname: JOI.string(),
   });
 
   return schema.validate(data);
