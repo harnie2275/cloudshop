@@ -52,6 +52,8 @@ const userRoutes = require("./routes/user.routes");
 const productRoutes = require("./routes/product.routes");
 const orderRoutes = require("./routes/order.routes");
 const adminRoutes = require("./routes/admin.routes");
+const miscRoutes = require("./routes/misc.routes");
+
 const { activateAccount } = require("./utils/helper/template/activateAccount");
 const mailer = require("./utils/mailer");
 
@@ -92,6 +94,7 @@ app.use(`${API_VERSION}/user`, userRoutes);
 app.use(`${API_VERSION}/product`, productRoutes);
 app.use(`${API_VERSION}/order`, orderRoutes);
 app.use(`${API_VERSION}/admin`, adminRoutes);
+app.use(`${API_VERSION}/misc`, miscRoutes);
 
 /**
  * @return next error
