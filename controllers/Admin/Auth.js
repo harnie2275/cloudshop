@@ -34,13 +34,6 @@ exports.login = async (req, res, next) => {
     const admin = await User.findOne({ email: email.toLowerCase() }).select(
       "+password"
     );
-    if (["user"].includes(admin.role))
-      return respondWithError(
-        res,
-        {},
-        "Not permitted to perform such task",
-        StatusCodes.UNAUTHORIZED
-      );
 
     if (!admin)
       return respondWithError(
@@ -49,6 +42,14 @@ exports.login = async (req, res, next) => {
         "No admin account with this email was found",
         StatusCodes.BAD_REQUEST
       );
+    if (["user"].includes(admin.role))
+      return respondWithError(
+        res,
+        {},
+        "Not permitted to perform such task",
+        StatusCodes.UNAUTHORIZED
+      );
+
     const correctPassword = await admin.comparePassword(password);
 
     if (!correctPassword)
