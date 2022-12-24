@@ -109,7 +109,7 @@ exports.registerStaff = async (req, res, next) => {
 
     // todo: send email
 
-    const link = `${ADMIN_APP_URL}/setPassword?token=${randomToken.token}`;
+    const link = `${ADMIN_APP_URL}/setpassword?token=${randomToken.token}`;
 
     const MESSAGE = activateAccount(link, admin.email);
     /**
