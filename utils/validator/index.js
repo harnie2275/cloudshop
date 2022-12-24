@@ -66,6 +66,7 @@ const productValidator = (data) => {
     detailedDescription: JOI.string(),
     regularPrice: JOI.string(),
     file: JOI.string(),
+    addedBy: JOI.string().required(),
   });
 
   return schema.validate(data);
