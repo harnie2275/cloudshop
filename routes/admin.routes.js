@@ -18,7 +18,11 @@ const {
   getCategoryDetail,
   editCategory,
 } = require("../controllers/Admin/Product");
-const { adminQueryUser, adminGetUsers } = require("../controllers/Admin/User");
+const {
+  adminQueryUser,
+  adminGetUsers,
+  adminGetStaff,
+} = require("../controllers/Admin/User");
 const { adminMiddle } = require("../middleware/adminMiddle");
 const { MultiPhotoConverter } = require("../middleware/MultiPhotoConverter");
 
@@ -31,6 +35,8 @@ router.route("/auth/staff").post(adminMiddle, registerStaff);
 // todo: user
 router.route("/user").get(adminMiddle, adminGetUsers);
 router.route("/user/:id").get(adminMiddle, adminQueryUser);
+router.route("/staff").get(adminMiddle, adminGetStaff);
+router.route("/staff/:id").get(adminMiddle, adminQueryUser);
 
 // todo: product and catogory
 router.post("/category/add", adminMiddle, addCategory);

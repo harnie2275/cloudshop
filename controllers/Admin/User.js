@@ -40,3 +40,24 @@ exports.adminGetUsers = async (req, res, next) => {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
 };
+
+exports.adminGetStaff = async (req, res, next) => {
+  try {
+    const { perPage, page } = req.query;
+    const limit = perPage ? perPage : 20;
+    const skip = page ? page - 1 : 0;
+    const totalDoc = await (await User.find()).length;
+    const user = await User.find({
+      role: "admin" || "sale rep" || "editor" || "marketing",
+    });
+
+    respondWithSuccess(
+      res,
+      { user, totalDoc },
+      "user has been fetched",
+      StatusCodes.OK
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};

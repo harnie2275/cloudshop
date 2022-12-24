@@ -89,6 +89,7 @@ exports.registerStaff = async (req, res, next) => {
       ...req.body,
       password: randomize("0", 6),
       verified: true,
+      // role: req.body.role ? req.body.role : "admin",
     };
     console.log(finalObj);
     const admin = await User.findOneOrCreate(
