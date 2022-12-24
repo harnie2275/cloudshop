@@ -46,6 +46,9 @@ const ProductSchema = new Schema(
       type: Number,
       required: [true, "Shipping Fee is required"],
     },
+    file: {
+      type: String,
+    },
     variation: {
       color: {
         type: Array,
