@@ -64,6 +64,8 @@ const productValidator = (data) => {
     variation: JOI.object(),
     productTag: JOI.array(),
     detailedDescription: JOI.string(),
+    regularPrice: JOI.string(),
+    file: JOI.string(),
   });
 
   return schema.validate(data);
