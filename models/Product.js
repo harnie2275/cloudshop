@@ -40,7 +40,7 @@ const ProductSchema = new Schema(
     },
     inventory: {
       type: Object,
-      required: [true, "Inventory is required"],
+      // required: [true, "Inventory is required"],
       default: { availability: "in-stock", amount: 1 },
     },
     shippingFee: {
