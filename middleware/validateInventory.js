@@ -17,6 +17,15 @@ exports.validateInventry = async (req, res, next) => {
 
     const items = req.body.items.map((anItem) => anItem.id);
 
+    const getProducts = await Product.find()
+      .where("_id")
+      .in(items)
+      .where("productType")
+      .equals("digital")
+      .exec();
+
+    if (getProducts) next();
+
     let hasDuplicate = items.some((val, i) => items.indexOf(val) !== i);
 
     if (hasDuplicate) {

@@ -23,46 +23,41 @@ exports.allProduct = async (req, res, next) => {
     const allProduct = await Product.find()
       .limit(limit)
       .skip(limit * pageFall);
+
     if (sort) {
       switch (sort) {
         case "low-high": {
-          const sortedProduct = allProduct.sort((a, b) => a.amount - b.amount);
+          const sortedProduct = await Product.find()
+            .sort("amount")
+            .limit(limit)
+            .skip(limit * pageFall);
           return respondWithSuccess(
             res,
-            { queriedProduct: sortedProduct, totalDoc: totalDoc.length },
+            { queriedProduct: sortedProduct, totalDoc: DocCount.length },
             "Sorted successfully",
             StatusCodes.OK
           );
         }
         case "high-low": {
-          const sortedProduct = allProduct.sort((a, b) => b.amount - a.amount);
+          const sortedProduct = await Product.find()
+            .sort("-amount")
+            .limit(limit)
+            .skip(limit * pageFall);
           return respondWithSuccess(
             res,
-            { queriedProduct: sortedProduct, totalDoc: totalDoc.length },
+            { queriedProduct: sortedProduct, totalDoc: DocCount.length },
             "Sorted successfully",
             StatusCodes.OK
           );
         }
-        // case "rating": {
-        //   const sortedProduct = allProduct.sort(
-        //     (a, b) =>
-        //       b.rating.reduce((bc, bd) => bc + bd) -
-        //       a.rating.reduce((ac, ad) => ac + ad)
-        //   );
-        //   return respondWithSuccess(
-        //     res,
-        //     sortedProduct,
-        //     "Sorted successfully",
-        //     StatusCodes.OK
-        //   );
-        // }
         case "latest": {
-          const sortedProduct = allProduct.sort(
-            (a, b) => b.createdAt - a.createdAt
-          );
+          const sortedProduct = await Product.find()
+            .sort("-updatedAt")
+            .limit(limit)
+            .skip(limit * pageFall);
           return respondWithSuccess(
             res,
-            { queriedProduct: sortedProduct, totalDoc: totalDoc.length },
+            { queriedProduct: sortedProduct, totalDoc: DocCount.length },
             "Sorted successfully",
             StatusCodes.OK
           );
@@ -70,18 +65,12 @@ exports.allProduct = async (req, res, next) => {
         default:
           return respondWithSuccess(
             res,
-            { queriedProduct: sortedProduct, totalDoc: totalDoc.length },
+            { queriedProduct: queriedProduct, totalDoc: DocCount.length },
             "Sorted product fetched successfully",
             StatusCodes.OK
           );
       }
     }
-    respondWithSuccess(
-      res,
-      { queriedProduct: allProduct, totalDoc: totalDoc.length },
-      "All product fetched successfully",
-      StatusCodes.OK
-    );
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
@@ -114,9 +103,12 @@ exports.queryProduct = async (req, res, next) => {
     if (sort) {
       switch (sort) {
         case "low-high": {
-          const sortedProduct = queriedProduct.sort(
-            (a, b) => a.amount - b.amount
-          );
+          const sortedProduct = await Product.find({
+            "productCategory.stream": category,
+          })
+            .sort("amount")
+            .limit(limit)
+            .skip(limit * pageFall);
           return respondWithSuccess(
             res,
             { queriedProduct: sortedProduct, totalDoc: DocCount.length },
@@ -125,9 +117,12 @@ exports.queryProduct = async (req, res, next) => {
           );
         }
         case "high-low": {
-          const sortedProduct = queriedProduct.sort(
-            (a, b) => b.amount - a.amount
-          );
+          const sortedProduct = await Product.find({
+            "productCategory.stream": category,
+          })
+            .sort("-amount")
+            .limit(limit)
+            .skip(limit * pageFall);
           return respondWithSuccess(
             res,
             { queriedProduct: sortedProduct, totalDoc: DocCount.length },
@@ -135,23 +130,13 @@ exports.queryProduct = async (req, res, next) => {
             StatusCodes.OK
           );
         }
-        // case "rating": {
-        //   const sortedProduct = queriedProduct.sort(
-        //     (a, b) =>
-        //       b.rating.reduce((bc, bd) => bc + bd) -
-        //       a.rating.reduce((ac, ad) => ac + ad)
-        //   );
-        //   return respondWithSuccess(
-        //     res,
-        //     sortedProduct,
-        //     "Sorted successfully",
-        //     StatusCodes.OK
-        //   );
-        // }
         case "latest": {
-          const sortedProduct = queriedProduct.sort(
-            (a, b) => b.createdAt - a.createdAt
-          );
+          const sortedProduct = await Product.find({
+            "productCategory.stream": category,
+          })
+            .sort("-updatedAt")
+            .limit(limit)
+            .skip(limit * pageFall);
           return respondWithSuccess(
             res,
             { queriedProduct: sortedProduct, totalDoc: DocCount.length },
@@ -162,19 +147,19 @@ exports.queryProduct = async (req, res, next) => {
         default:
           return respondWithSuccess(
             res,
-            { queriedProduct: sortedProduct, totalDoc: DocCount.length },
+            { queriedProduct: queriedProduct, totalDoc: DocCount.length },
             "Sorted product fetched successfully",
             StatusCodes.OK
           );
       }
     }
 
-    respondWithSuccess(
-      res,
-      { queriedProduct, totalDoc: DocCount.length },
-      "Product has been fetched",
-      StatusCodes.OK
-    );
+    // respondWithSuccess(
+    //   res,
+    //   { queriedProduct, totalDoc: DocCount.length },
+    //   "Product has been fetched",
+    //   StatusCodes.OK
+    // );
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }

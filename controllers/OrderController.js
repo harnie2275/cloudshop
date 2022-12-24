@@ -74,6 +74,9 @@ exports.placeOrder = async (req, res, next) => {
 const updateInventory = async (item, action) => {
   try {
     const product = await Product.findById(item?.id);
+    if (product.productType === "digital") {
+      return;
+    }
     await Product.findByIdAndUpdate(item?.id, {
       "inventory.amount":
         action === "reduce"

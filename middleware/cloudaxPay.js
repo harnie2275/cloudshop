@@ -5,6 +5,7 @@ const { respondWithError } = require("../utils/response");
 const { orderValidator } = require("../utils/validator");
 const crypto = require("crypto");
 const Transaction = require("../models/Transaction");
+const { verifyPayment } = require("../utils/helper/paystack/verifyPayment");
 
 exports.cloudaxPay = async (req, res, next) => {
   try {
@@ -52,9 +53,38 @@ exports.cloudaxPay = async (req, res, next) => {
       req.newBody = { ...req.body, paymentRef, status: "confirmed" };
       next();
       return;
-    } else {
-      next();
     }
+    if (paymentMethod === "card") {
+      // TODO: verify payment and update status
+      const doudbleRef = await Transaction.findOne({
+        trnxRef: req.body.paymentRef,
+      });
+      if (doudbleRef)
+        return respondWithError(
+          res,
+          {},
+          "A transaction already exist with this payment reference",
+          StatusCodes.BAD_REQUEST
+        );
+      const verifyPaymentRef = await verifyPayment(req.body.paymentRef);
+      if (!verifyPaymentRef.status)
+        return respondWithError(
+          res,
+          {},
+          verifyPaymentRef.message,
+          StatusCodes.BAD_REQUEST
+        );
+      await Transaction.create({
+        user: req.id,
+        activity: "product order",
+        trnxRef: req.body.paymentRef,
+      });
+
+      req.newBody = { ...req.body, status: "confirmed" };
+      next();
+      return;
+    }
+    next();
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
