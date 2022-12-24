@@ -11,6 +11,8 @@ const regValidator = (data) => {
   const schema = JOI.object({
     email: JOI.string().required().email(),
     role: JOI.string(),
+    firstname: JOI.string(),
+    lastname: JOI.string(),
     password: JOI.string().required().min(8).max(255),
     phone: JOI.string().required().min(11).max(20),
   });
