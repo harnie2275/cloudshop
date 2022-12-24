@@ -59,7 +59,7 @@ const productValidator = (data) => {
     productType: JOI.string().required(),
     SKU: JOI.string().required(),
     inventory: JOI.object(),
-    shippingFee: JOI.number().required(),
+    shippingFee: JOI.number(),
     photoGallery: JOI.array(),
     variation: JOI.object(),
     productTag: JOI.array(),

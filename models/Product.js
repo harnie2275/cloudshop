@@ -45,7 +45,8 @@ const ProductSchema = new Schema(
     },
     shippingFee: {
       type: Number,
-      required: [true, "Shipping Fee is required"],
+      // required: [true, "Shipping Fee is required"],
+      default: 0,
     },
     file: {
       type: String,
