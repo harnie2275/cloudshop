@@ -71,6 +71,12 @@ exports.allProduct = async (req, res, next) => {
           );
       }
     }
+    return respondWithSuccess(
+      res,
+      { queriedProduct: allProduct, totalDoc: DocCount.length },
+      "Sorted product fetched successfully",
+      StatusCodes.OK
+    );
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
@@ -154,12 +160,12 @@ exports.queryProduct = async (req, res, next) => {
       }
     }
 
-    // respondWithSuccess(
-    //   res,
-    //   { queriedProduct, totalDoc: DocCount.length },
-    //   "Product has been fetched",
-    //   StatusCodes.OK
-    // );
+    respondWithSuccess(
+      res,
+      { queriedProduct, totalDoc: DocCount.length },
+      "Product has been fetched",
+      StatusCodes.OK
+    );
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
