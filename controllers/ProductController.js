@@ -19,7 +19,7 @@ exports.allProduct = async (req, res, next) => {
 
     const limit = perPage !== undefined ? perPage : 12;
     const pageFall = page !== undefined ? page - 1 : 0;
-    const totalDoc = await Product.find();
+    const DocCount = await Product.find();
     const allProduct = await Product.find()
       .limit(limit)
       .skip(limit * pageFall);
@@ -65,7 +65,7 @@ exports.allProduct = async (req, res, next) => {
         default:
           return respondWithSuccess(
             res,
-            { queriedProduct: queriedProduct, totalDoc: DocCount.length },
+            { queriedProduct: allProduct, totalDoc: DocCount.length },
             "Sorted product fetched successfully",
             StatusCodes.OK
           );
