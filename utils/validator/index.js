@@ -58,7 +58,7 @@ const productValidator = (data) => {
     catchPhrase: JOI.string().required(),
     productType: JOI.string().required(),
     SKU: JOI.string().required(),
-    inventory: JOI.object().required(),
+    inventory: JOI.object(),
     shippingFee: JOI.number().required(),
     photoGallery: JOI.array(),
     variation: JOI.object(),
