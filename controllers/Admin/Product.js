@@ -216,3 +216,20 @@ exports.editCategory = async (req, res, next) => {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
 };
+
+exports.deleteProduct = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product)
+      return respondWithError(
+        res,
+        {},
+        "Could not find product",
+        StatusCodes.BAD_REQUEST
+      );
+    product.delete();
+    respondWithSuccess(res, {}, "Product deleted successfully", StatusCodes.OK);
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+};

@@ -17,6 +17,7 @@ const {
   addCategory,
   getCategoryDetail,
   editCategory,
+  deleteProduct,
 } = require("../controllers/Admin/Product");
 const {
   adminQueryUser,
@@ -41,6 +42,7 @@ router.route("/staff/:id").get(adminMiddle, adminQueryUser);
 // todo: product and catogory
 router.post("/category/add", adminMiddle, addCategory);
 router.post("/product/add", adminMiddle, MultiPhotoConverter, addProduct);
+router.delete("/product/:id", adminMiddle, deleteProduct);
 router
   .route("/category/:slug")
   .get(adminMiddle, getCategoryDetail)
