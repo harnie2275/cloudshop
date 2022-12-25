@@ -131,13 +131,7 @@ exports.login = async (req, res, next) => {
       return respondWithError(res, {}, error?.message, StatusCodes.BAD_REQUEST);
     }
     const user = await User.findOne({ email }).select("+password");
-    if (["admin", "editor", "sale rep", "marketing"].includes(user.role))
-      return respondWithError(
-        res,
-        {},
-        "Not permitted to perform such task",
-        StatusCodes.UNAUTHORIZED
-      );
+
     if (!user)
       return respondWithError(
         res,
@@ -155,6 +149,14 @@ exports.login = async (req, res, next) => {
         {},
         "password is incorrect",
         StatusCodes.NOT_ACCEPTABLE
+      );
+
+    if (["admin", "editor", "sale rep", "marketing"].includes(user.role))
+      return respondWithError(
+        res,
+        {},
+        "Not permitted to perform such task",
+        StatusCodes.UNAUTHORIZED
       );
 
     // TODO:  generate JWT token
