@@ -29,6 +29,7 @@ exports.allProduct = async (req, res, next) => {
       switch (sort) {
         case "low-high": {
           const sortedProduct = await Product.find()
+            .sort("-updatedAt")
             .sort("amount")
             .limit(limit)
             .skip(limit * pageFall);
@@ -41,6 +42,7 @@ exports.allProduct = async (req, res, next) => {
         }
         case "high-low": {
           const sortedProduct = await Product.find()
+            .sort("-updatedAt")
             .sort("-amount")
             .limit(limit)
             .skip(limit * pageFall);

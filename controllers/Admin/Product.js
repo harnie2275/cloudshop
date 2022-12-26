@@ -88,6 +88,36 @@ exports.addProduct = async (req, res, next) => {
   }
 };
 
+exports.editProduct = async (req, res, next) => {
+  try {
+    if (Object.entries(req.body).length < 1) {
+      respondWithError(
+        res,
+        {},
+        "Please provide an information to be update",
+        StatusCodes.BAD_REQUEST
+      );
+      return;
+    }
+    const product = await Product.findByIdAndUpdate(req.params.id, {
+      ...req.body,
+    });
+
+    if (!product) {
+      respondWithError(
+        res,
+        {},
+        "something went wrong",
+        StatusCodes.BAD_REQUEST
+      );
+      return;
+    }
+    respondWithSuccess(res, product, "Updated successfully", StatusCodes.OK);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 /**
  *
  * @param {{
