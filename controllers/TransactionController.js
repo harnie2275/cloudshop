@@ -44,7 +44,9 @@ exports.fundWallet = async (req, res, next) => {
         StatusCodes.BAD_REQUEST
       );
 
-    const CLDX_Equivalent = convertToCLDX(verifyPaymentRef.payment.amount);
+    const CLDX_Equivalent = await convertToCLDX(
+      verifyPaymentRef.payment.amount
+    );
 
     userLedger.CLDX += parseFloat(CLDX_Equivalent);
 
