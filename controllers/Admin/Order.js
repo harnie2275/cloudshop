@@ -22,6 +22,7 @@ exports.adminGetOrder = async (req, res, next) => {
     const skip = page ? page - 1 : 0;
     const totalDoc = await (await Order.find()).length;
     const order = await Order.find()
+      .sort("-createdAt")
       .limit(limit)
       .skip(skip * limit);
     if (!order)
@@ -257,7 +258,7 @@ exports.adminQueryOrderByProduct = async (req, res, next) => {
     const { id } = req.params;
     const productOrders = await Order.find({
       items: { $elemMatch: { id: id } },
-    });
+    }).sort("-createdAt");
 
     respondWithSuccess(res, productOrders, "successful", StatusCodes.OK);
   } catch (error) {

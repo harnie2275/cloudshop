@@ -49,7 +49,7 @@ exports.adminGetStaff = async (req, res, next) => {
     const totalDoc = await (await User.find()).length;
     const user = await User.find({
       role: "admin" || "sale rep" || "editor" || "marketing",
-    });
+    }).sort("-createdAt");
 
     respondWithSuccess(
       res,

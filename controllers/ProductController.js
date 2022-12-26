@@ -21,6 +21,7 @@ exports.allProduct = async (req, res, next) => {
     const pageFall = page !== undefined ? page - 1 : 0;
     const DocCount = await Product.find();
     const allProduct = await Product.find()
+      .sort("-updatedAt")
       .limit(limit)
       .skip(limit * pageFall);
 
