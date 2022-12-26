@@ -28,7 +28,7 @@ exports.cloudaxPay = async (req, res, next) => {
           "could not find a CLDX wallet in user account",
           StatusCodes.BAD_REQUEST
         );
-      const CLDX_Equivalent = convertToCLDX(totalAmount);
+      const CLDX_Equivalent = await convertToCLDX(totalAmount);
 
       if (userLedger.CLDX < CLDX_Equivalent)
         return respondWithError(
