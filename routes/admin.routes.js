@@ -44,7 +44,7 @@ router.route("/staff/:id").get(adminMiddle, adminQueryUser);
 router.post("/category/add", adminMiddle, addCategory);
 router.post("/product/add", adminMiddle, MultiPhotoConverter, addProduct);
 router.delete("/product/:id", adminMiddle, deleteProduct);
-router.delete("/product/:id/edit", adminMiddle, editProduct);
+router.post("/product/:id/edit", adminMiddle, editProduct);
 router
   .route("/category/:slug")
   .get(adminMiddle, getCategoryDetail)
