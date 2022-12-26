@@ -90,6 +90,15 @@ exports.addProduct = async (req, res, next) => {
 
 exports.editProduct = async (req, res, next) => {
   try {
+    if (req.params.id === ":id" || req.params.id === undefined) {
+      respondWithError(
+        res,
+        {},
+        "Please provide product id",
+        StatusCodes.BAD_REQUEST
+      );
+      return;
+    }
     if (Object.entries(req.body).length < 1) {
       respondWithError(
         res,
@@ -99,20 +108,24 @@ exports.editProduct = async (req, res, next) => {
       );
       return;
     }
-    const product = await Product.findByIdAndUpdate(req.params.id, {
-      ...req.body,
-    });
 
-    if (!product) {
-      respondWithError(
-        res,
-        {},
-        "something went wrong",
-        StatusCodes.BAD_REQUEST
-      );
-      return;
-    }
-    respondWithSuccess(res, product, "Updated successfully", StatusCodes.OK);
+    await Product.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true },
+      function (err, model) {
+        if (err) {
+          respondWithError(res, {}, err.message, StatusCodes.BAD_REQUEST);
+          return;
+        }
+        respondWithSuccess(
+          res,
+          model,
+          "User Information has been updated",
+          StatusCodes.OK
+        );
+      }
+    ).clone();
   } catch (error) {
     console.log(error);
   }
