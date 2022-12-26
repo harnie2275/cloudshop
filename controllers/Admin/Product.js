@@ -109,23 +109,20 @@ exports.editProduct = async (req, res, next) => {
       return;
     }
 
-    await Product.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body },
-      { new: true },
-      function (err, model) {
-        if (err) {
-          respondWithError(res, {}, err.message, StatusCodes.BAD_REQUEST);
-          return;
-        }
+    const product = await Product.findById(req.params.id);
+
+    Object.entries(req.body).forEach((anAction, item) => {
+      product[anAction[0]] = anAction[1];
+      if (item === Object.entries(req.body).length - 1) {
+        product.save();
         respondWithSuccess(
           res,
-          model,
-          "User Information has been updated",
+          product,
+          "order has been updated",
           StatusCodes.OK
         );
       }
-    ).clone();
+    });
   } catch (error) {
     console.log(error);
   }
