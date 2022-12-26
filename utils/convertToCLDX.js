@@ -12,5 +12,5 @@ exports.convertToCLDX = async (amount) => {
 
   let rate = await axios(config2);
   const usdConverted = rate.data.data.rate;
-  return parseFloat(usdConverted / 100) / 0.001;
+  return parseFloat(usdConverted / 100) / 0.004;
 };
