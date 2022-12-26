@@ -115,6 +115,7 @@ exports.editProduct = async (req, res, next) => {
       product[anAction[0]] = anAction[1];
       if (item === Object.entries(req.body).length - 1) {
         product.save();
+
         respondWithSuccess(
           res,
           product,
