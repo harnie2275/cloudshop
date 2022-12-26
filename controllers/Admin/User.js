@@ -28,6 +28,7 @@ exports.adminGetUsers = async (req, res, next) => {
     const skip = page ? page - 1 : 0;
     const totalDoc = await (await User.find()).length;
     const user = await User.find()
+      .sort("-createdAt")
       .limit(limit)
       .skip(skip * limit);
     respondWithSuccess(
