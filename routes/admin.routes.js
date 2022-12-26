@@ -25,6 +25,7 @@ const {
   adminGetUsers,
   adminGetStaff,
 } = require("../controllers/Admin/User");
+const { NGNCLDX } = require("../controllers/MiscController");
 const { adminMiddle } = require("../middleware/adminMiddle");
 const { MultiPhotoConverter } = require("../middleware/MultiPhotoConverter");
 
@@ -63,5 +64,8 @@ router
   .get(adminMiddle, getAllImage)
   .post(adminMiddle, addImage)
   .delete(adminMiddle, deleteImage);
+
+//todo: misc
+router.post("/misc/ngncldx", NGNCLDX);
 
 module.exports = router;
