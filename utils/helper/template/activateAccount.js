@@ -947,7 +947,7 @@ body {
                                                                         <table cellpadding="0" cellspacing="0" width="100%">
                                                                             <tbody>
                                                                                 <tr>
-                                                                                    <td align="center" class="esd-block-image es-p20b" style="font-size: 0px;"><a target="_blank"><img src="https://ycdtaw.stripocdn.email/content/guids/CABINET_3ec332d11b62b7eb30db2e75b892553e/images/logo.png" alt="Logo" style="display: block; font-size: 12px;" width="200" title="Logo"></a></td>
+                                                                                   <td align="center" class="esd-block-image es-p20b" style="font-size: 0px;"><a target="_blank"><img src="https://cloudshopa.vercel.app/logo.svg" alt="Logo" style="display: block; font-size: 12px;" width="200" title="Logo"></a></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td class="esd-block-menu" esd-tmp-menu-padding="15|15">
