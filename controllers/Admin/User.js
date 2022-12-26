@@ -26,8 +26,14 @@ exports.adminGetUsers = async (req, res, next) => {
     const { perPage, page } = req.query;
     const limit = perPage ? perPage : 20;
     const skip = page ? page - 1 : 0;
-    const totalDoc = await (await User.find()).length;
-    const user = await User.find()
+    const totalDoc = await (
+      await User.find({
+        role: "user",
+      })
+    ).length;
+    const user = await User.find({
+      role: "user",
+    })
       .sort("-createdAt")
       .limit(limit)
       .skip(skip * limit);
