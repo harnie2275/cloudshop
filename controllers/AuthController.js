@@ -56,7 +56,7 @@ exports.register = async (req, res, next) => {
       );
 
     const createdUser = await User.findOneOrCreate(
-      { email },
+      { email: email.toLowerCase() },
       { ...req.body, email: email.toLowerCase() }
     );
     if (!createdUser)
@@ -77,9 +77,8 @@ exports.register = async (req, res, next) => {
 
     await Ledger.create({ user: createdUser._id });
 
-    const link = `${WEB_APP_URL}/activate?token=${
-      randomToken.token
-    }&redirect_url=${redirect_url ? redirect_url : ""}`;
+    const link = `${WEB_APP_URL}/activate?token=${randomToken.token
+      }&redirect_url=${redirect_url ? redirect_url : ""}`;
     const MESSAGE = activateAccount(link, req.body.email);
     /**
      * @return send link to user mail
@@ -130,7 +129,7 @@ exports.login = async (req, res, next) => {
     if (error !== false) {
       return respondWithError(res, {}, error?.message, StatusCodes.BAD_REQUEST);
     }
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
 
     if (!user)
       return respondWithError(
@@ -278,9 +277,8 @@ exports.resendActivateLink = async (req, res, next) => {
       token: crypto.randomBytes(32).toString("hex"),
     }).save();
 
-    const link = `${WEB_APP_URL}/activate?token=${
-      randomToken.token
-    }&redirect_url=${redirect_url ? redirect_url : ""}`;
+    const link = `${WEB_APP_URL}/activate?token=${randomToken.token
+      }&redirect_url=${redirect_url ? redirect_url : ""}`;
 
     const MESSAGE = activateAccount(link, user.email);
     /**

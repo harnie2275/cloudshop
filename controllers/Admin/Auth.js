@@ -17,6 +17,7 @@ const mailer = require("../../utils/mailer");
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    console.log(email)
     if (!email)
       return respondWithError(
         res,
@@ -31,9 +32,13 @@ exports.login = async (req, res, next) => {
         "Please provide a password",
         StatusCodes.BAD_REQUEST
       );
+
+
     const admin = await User.findOne({ email: email.toLowerCase() }).select(
       "+password"
     );
+
+
 
     if (!admin)
       return respondWithError(
