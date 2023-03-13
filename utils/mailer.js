@@ -11,12 +11,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const mailer = (object) => {
+const mailer = ({ email, subject, message }) => {
   const mailOptions = {
     from: MAIL_ADDRESS,
-    to: object?.email,
-    subject: object?.subject,
-    html: object?.message,
+    to: email,
+    subject: subject,
+    html: message,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {

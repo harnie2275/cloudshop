@@ -23,6 +23,7 @@ const errorHandlerMiddleware = (err, req, res, next) => {
   }
   // console.log(err);
   return respondWithError(res, [], error.msg, error.statusCode);
+  next();
 };
 
 module.exports = errorHandlerMiddleware;
