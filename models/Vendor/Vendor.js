@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET, JWT_LIFETIME } = require("../../config/env");
+const bcrypt = require("bcryptjs");
 
 const schemaPlugin = require("mongoose-unique-validator");
 
@@ -70,10 +71,14 @@ const Vendor = new mongoose.Schema(
 );
 
 Vendor.plugin(schemaPlugin, { message: "{VALUE} already exists" });
+
 Vendor.methods.generateToken = function () {
   const token = jwt.sign({ userId: this._id, email: this.email }, JWT_SECRET, {
     expiresIn: JWT_LIFETIME,
   });
   return token;
+};
+Vendor.methods.comparePassword = async function (password) {
+  return bcrypt.compare(password, this.password);
 };
 module.exports = mongoose.model("Vendor", Vendor);

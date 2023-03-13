@@ -4,7 +4,9 @@ const {
   createVendor,
   activateVendor,
   resendVendorActivationLink,
+  vendorLogin,
 } = require("../controllers/Vendor/Auth");
+const { getVendor } = require("../controllers/Vendor/User");
 const { vendorMiddleware } = require("../middleware/vendorMiddleware");
 
 const router = express.Router();
@@ -15,5 +17,8 @@ router.get("/auth/resend-activation-link", [
   vendorMiddleware,
   resendVendorActivationLink,
 ]);
+
+router.get("/user/me", [vendorMiddleware, getVendor]);
+router.post("/auth/login", vendorLogin);
 
 module.exports = router;

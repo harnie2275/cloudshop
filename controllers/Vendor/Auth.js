@@ -145,3 +145,48 @@ exports.resendVendorActivationLink = async (req, res, next) => {
     respondWithError(res, {}, error.message, 400);
   }
 };
+
+exports.vendorLogin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  console.log(email, password);
+  if (!email)
+    return respondWithError(res, [], "Please provide an email address", 400);
+  if (!password)
+    return respondWithError(res, [], "Please provide a password", 400);
+
+  const vendor = await Vendor.findOne({ email: email.toLowerCase() }).select(
+    "+password"
+  );
+  if (!vendor) return respondWithError(res, [], "This email is invalid");
+
+  const correctPass = await vendor.comparePassword(password);
+
+  if (!correctPass) return respondWithError(res, [], "Password incorrect", 400);
+  console.log("Reached");
+  const token = vendor.generateToken();
+  if (!vendor.is_verified) {
+    await Token.findOneAndDelete({ userId: vendor._id });
+    const randomToken = await new Token({
+      userId: vendor._id,
+      token: crypto.randomBytes(32).toString("hex"),
+    }).save();
+
+    const verification_link = `${vendor_url}/activate?token=${randomToken.token}`;
+
+    const MAIL_BODY = activateAccount(verification_link, vendor.email);
+
+    mailer({
+      email: vendor.email,
+      subject: "Verify your email",
+      message: MAIL_BODY,
+    });
+    return respondWithSuccess(
+      res,
+      { token, email: vendor?.email, unverified: true },
+      `A verification link has been sent to ${vendor.email}, please verify your account`,
+      200
+    );
+  } else {
+    return respondWithSuccess(res, { token }, "Authenticated", 200);
+  }
+});
