@@ -20,6 +20,7 @@ const {
 } = require("../../utils/helper/template/activateAccount");
 
 const mailer = require("../../utils/mailer");
+const randomize = require("randomatic");
 
 exports.createVendor = asyncHandler(async (req, res) => {
   console.log(req.body);
@@ -190,3 +191,97 @@ exports.vendorLogin = asyncHandler(async (req, res) => {
     return respondWithSuccess(res, { token }, "Authenticated", 200);
   }
 });
+
+exports.vendorResetPasswordLink = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email)
+      return respondWithError(res, {}, "Email address is required", 400);
+    const vendor = await Vendor.findOne({ email });
+    if (!vendor)
+      return respondWithError(
+        res,
+        {},
+        "Vendor with this address doesn't exist ",
+        400
+      );
+
+    //consideration: check for existing tokens and delete
+    const OTP = randomize("0", 6);
+    const randomToken = await Token.findOneOrCreate(
+      { token: OTP },
+      {
+        userId: vendor._id,
+        token: OTP,
+      }
+    );
+    if (!randomToken)
+      return respondWithError(res, {}, `something went wrong - TOKEN911`, 417);
+    randomToken.save();
+
+    /**
+     * @param {*} sendMail send a mail to user.
+     */
+    mailer({
+      email: vendor?.email,
+      message: `Your verification token is ${randomToken.token}`,
+      subject: "Reset Password OTP | Cloudshopa",
+    });
+    respondWithSuccess(
+      res,
+      {},
+      `A One-Time Password has been sent to ${vendor.email}`,
+      200
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, 400);
+  }
+};
+
+exports.vendorResetPassword = async (req, res, next) => {
+  try {
+    const { otp, password } = req.body;
+    if (!otp || !password) {
+      if (!otp) return respondWithError(res, {}, "OTP is required", 400);
+      if (!password)
+        return respondWithError(res, {}, "Password is required", 400);
+    }
+    const correctToken = await Token.findOne({ token: otp });
+    if (!correctToken)
+      return respondWithError(
+        res,
+        { type: "invalid_otp" },
+        "Invalid OTP, Please provide the right OTP",
+        400
+      );
+    const vendor = await Vendor.findById(correctToken.userId).select(
+      "+password"
+    );
+    if (!vendor)
+      return respondWithError(
+        res,
+        { type: "invalid_otp" },
+        "Invalid OTP, Please provide the right OTP",
+        400
+      );
+    const salt = await bcrypt.genSalt(10);
+
+    // Hash the password
+
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const newVendorInfo = await Vendor.findByIdAndUpdate(vendor._id, {
+      password: hashedPassword,
+    });
+    newVendorInfo.save();
+    correctToken.delete();
+    const token = await vendor.generateToken();
+    respondWithSuccess(
+      res,
+      { token },
+      "Password has been reset successfully",
+      200
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, 400);
+  }
+};

@@ -5,6 +5,8 @@ const {
   activateVendor,
   resendVendorActivationLink,
   vendorLogin,
+  vendorResetPasswordLink,
+  vendorResetPassword,
 } = require("../controllers/Vendor/Auth");
 const { getVendor } = require("../controllers/Vendor/User");
 const { vendorMiddleware } = require("../middleware/vendorMiddleware");
@@ -20,5 +22,6 @@ router.get("/auth/resend-activation-link", [
 
 router.get("/user/me", [vendorMiddleware, getVendor]);
 router.post("/auth/login", vendorLogin);
-
+router.post("/auth/send-reset-token", vendorResetPasswordLink);
+router.post("/auth/reset-password", vendorResetPassword);
 module.exports = router;
