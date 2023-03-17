@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, default: mongoose } = require("mongoose");
 
 const ProductSchema = new Schema(
   {
@@ -69,7 +69,7 @@ const ProductSchema = new Schema(
       type: Array,
     },
     addedBy: {
-      type: String,
+      type: mongoose.Types.ObjectId,
       required: true,
       default: "",
     },
