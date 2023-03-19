@@ -12,7 +12,11 @@ const {
   addVendorImage,
   getAllVendorImages,
 } = require("../controllers/Vendor/Media");
-const { vendorAddProduct } = require("../controllers/Vendor/Product");
+const {
+  vendorAddProduct,
+  allVendorProducts,
+  vendorSearchProduct,
+} = require("../controllers/Vendor/Product");
 const { getVendor } = require("../controllers/Vendor/User");
 const { vendorMiddleware } = require("../middleware/vendorMiddleware");
 
@@ -34,6 +38,8 @@ router.get("/user/me", [vendorMiddleware, getVendor]);
 
 // Product
 router.post("/product/add", [vendorMiddleware, vendorAddProduct]);
+router.get("/product", [vendorMiddleware, allVendorProducts]);
+router.get("/product/search", [vendorMiddleware, vendorSearchProduct]);
 
 // Media
 router.get("/media", [vendorMiddleware, getAllVendorImages]);
