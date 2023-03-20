@@ -12,6 +12,7 @@ const {
   addVendorImage,
   getAllVendorImages,
 } = require("../controllers/Vendor/Media");
+const { getVendorOrders } = require("../controllers/Vendor/Order");
 const {
   vendorAddProduct,
   allVendorProducts,
@@ -40,6 +41,9 @@ router.get("/user/me", [vendorMiddleware, getVendor]);
 router.post("/product/add", [vendorMiddleware, vendorAddProduct]);
 router.get("/product", [vendorMiddleware, allVendorProducts]);
 router.get("/product/search", [vendorMiddleware, vendorSearchProduct]);
+
+// Order
+router.get("/orders", [vendorMiddleware, getVendorOrders]);
 
 // Media
 router.get("/media", [vendorMiddleware, getAllVendorImages]);
