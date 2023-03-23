@@ -64,6 +64,10 @@ const Vendor = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    identity_verified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

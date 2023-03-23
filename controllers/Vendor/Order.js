@@ -9,10 +9,13 @@ const {
 exports.getVendorOrders = asyncHandler(async (req, res) => {
   const vendor = req.vendor;
 
+  //   Get all vendor's products
   const products = await Product.find({ addedBy: vendor?._id });
 
+  //   Get all orders
   const orders = await Order.find();
 
+  //   Get vendor's orders from all vendor products and all orders
   const vendorOrders = orders.filter((order) =>
     order.items.some((item) =>
       products.map((product) => product?._id?.toString()).includes(item.id)
@@ -34,5 +37,112 @@ exports.getVendorOrders = asyncHandler(async (req, res) => {
     return respondWithSuccess(res, vendorFilteredOutOrders, "Fetched", 200);
   } else {
     return respondWithError(res, [], "An error occured", 400);
+  }
+});
+
+exports.vendorGetSingleOrder = asyncHandler(async (req, res) => {
+  const vendor = req.vendor;
+  const orderId = req.params.id;
+
+  const order = await Order.findOne({ orderId });
+
+  if (!order) return respondWithError(res, [], "Order not found", 404);
+
+  //   Get all vendor's products
+  const products = await Product.find({ addedBy: vendor?._id });
+
+  const productsIds = products.map((p) => p._id.toString());
+  const isVendorOrder = order.items.some((item) =>
+    productsIds.includes(item.id)
+  );
+  if (!isVendorOrder) return respondWithError(res, [], "Order not found", 404);
+
+  const filterOutOtherProducts = {
+    ...order._doc,
+    items: order.items.filter((i) => productsIds.includes(i.id)),
+  };
+
+  return respondWithSuccess(res, filterOutOtherProducts, "Fetched", 200);
+});
+
+exports.vendorUpdateOrder = asyncHandler(async (req, res) => {
+  const status = req.body.status;
+  const updateStatuses = Array.from([
+    "refunded",
+    "shipped",
+    "out for delivery",
+    "delivered",
+  ]);
+  if (!updateStatuses.includes(status))
+    return respondWithError(res, [], "Status not valid", 400);
+  const productsToUpdate = req.body.products;
+  if (!productsToUpdate)
+    return respondWithError(
+      res,
+      [],
+      "Please send a product or products to update"
+    );
+
+  const orderId = req.params.id;
+  const vendor = req.vendor;
+  const order = await Order.findOne({ orderId });
+  if (!order) {
+    return respondWithError(
+      res,
+      [],
+      "Order does not exist or might have been deleted"
+    );
+  }
+
+  const products = await Product.find({ addedBy: vendor._id });
+
+  const productsIds = products.map((p) => p._id.toString());
+
+  const isVendorOrder = order.items.some((item) =>
+    productsIds.includes(item.id)
+  );
+  const VendorOnlyProducts = productsToUpdate.filter((p) =>
+    productsIds.includes(p)
+  );
+
+  if (!isVendorOrder)
+    return respondWithError(res, [], "Order does not exist on your account");
+
+  const updateItems = VendorOnlyProducts.map(async (product) => {
+    const updateItem = await Order.findOneAndUpdate(
+      { orderId, "items.id": product },
+      {
+        $set: {
+          "items.$.status": status,
+          "items.$.updatedAt": new Date().toISOString(),
+        },
+      }
+    );
+    if (updateItem) {
+      return { updated: true, product_id: product };
+    } else return { updated: false, product_id: product };
+  });
+
+  const promisesResolved = await Promise.all(updateItems);
+
+  console.log(
+    promisesResolved,
+    VendorOnlyProducts,
+    productsIds,
+    productsToUpdate
+  );
+  if (promisesResolved.some((items) => !items.updated)) {
+    return respondWithError(
+      res,
+      promisesResolved,
+      "Some items could not be updated",
+      400
+    );
+  } else {
+    return respondWithSuccess(
+      res,
+      promisesResolved,
+      "Your items have been updated"
+    );
   }
 });
