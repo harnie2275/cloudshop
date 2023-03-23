@@ -1,12 +1,14 @@
 const { StatusCodes } = require("http-status-codes");
 const Product = require("../../models/Product");
 const Vendor = require("../../models/Vendor/Vendor");
+const asyncHandler = require("express-async-handler");
+
 const {
   respondWithSuccess,
   respondWithError,
 } = require("../../utils/response");
 
-exports.vendorAddProduct = async (req, res, next) => {
+exports.vendorAddProduct = asyncHandler(async (req, res, next) => {
   try {
     const vendor = await Vendor.findById(req.vendor?._id);
 
@@ -47,9 +49,9 @@ exports.vendorAddProduct = async (req, res, next) => {
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
-};
+});
 
-exports.allVendorProducts = async (req, res, next) => {
+exports.allVendorProducts = asyncHandler(async (req, res, next) => {
   const vendor = req.vendor;
   try {
     const { page, perPage, sort } = req.query;
@@ -121,34 +123,48 @@ exports.allVendorProducts = async (req, res, next) => {
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
-};
+});
 
 exports.vendorSearchProduct = async (req, res, next) => {
   const vendor = req.vendor;
 
   const searchQuery = (req.query.q || "").toLowerCase();
+
+  //   Document field to search by e.g displayName || inventory.amount
   const searchBy = req.query?.searchBy || null;
+
+  //   Filter to apply (contains,starts_with, is_gt) etc
   const filter = req.query.filter || "";
+
+  //   An array of value types
   const expressionType = JSON.parse(req.query.expr);
+
   let isInteger = expressionType.some((a) => ["number", "float"].includes(a));
+
   const regexFilterParam = {
+    // query contains
     contains: {
       [searchBy]: new RegExp(searchQuery, "i"),
     },
+    // Query starts with
     starts_with: {
       [searchBy]: new RegExp("^" + searchQuery, "i"),
     },
+    // Exact query (Case sensitive)
     is: {
       [searchBy]: req.query.q,
     },
+    // Exact query (Case insensitive)
     is_i: {
       [searchBy]: isInteger
         ? parseFloat(req.query.q || 0)
         : new RegExp("^" + searchQuery + "$", "i"),
     },
+    // Is greater than  (Numbers)
     is_gt: {
       [searchBy]: isInteger ? { $gt: parseFloat(req.query.q) } : "",
     },
+    // Is lesser than  (Numbers)
     is_lt: {
       [searchBy]: isInteger ? { $lt: parseFloat(req.query.q) } : "",
     },
@@ -168,3 +184,34 @@ exports.vendorSearchProduct = async (req, res, next) => {
     return respondWithError(res, [], "An error occured");
   }
 };
+
+exports.vendorGetOneProduct = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const vendor = req.vendor;
+    if (!id) {
+      return respondWithError(
+        res,
+        {},
+        "product id was not found",
+        StatusCodes.BAD_REQUEST
+      );
+    }
+    const product = await Product.findOne({ _id: id, addedBy: vendor._id });
+    if (!product)
+      return respondWithError(
+        res,
+        {},
+        "product not found",
+        StatusCodes.BAD_REQUEST
+      );
+    respondWithSuccess(
+      res,
+      product,
+      "product has been fetched",
+      StatusCodes.OK
+    );
+  } catch (error) {
+    respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
+  }
+});

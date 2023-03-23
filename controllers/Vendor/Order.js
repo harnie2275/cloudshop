@@ -19,8 +19,19 @@ exports.getVendorOrders = asyncHandler(async (req, res) => {
     )
   );
 
-  if (vendorOrders) {
-    return respondWithSuccess(res, vendorOrders, "Fetched", 200);
+  const vendorFilteredOutOrders = vendorOrders.map((vo) => {
+    const doc = vo._doc;
+    return {
+      ...doc,
+      items: doc.items.filter((i) =>
+        products.map((product) => product?._id?.toString()).includes(i.id)
+      ),
+    };
+  });
+  console.log(vendorFilteredOutOrders);
+
+  if (vendorFilteredOutOrders) {
+    return respondWithSuccess(res, vendorFilteredOutOrders, "Fetched", 200);
   } else {
     return respondWithError(res, [], "An error occured", 400);
   }

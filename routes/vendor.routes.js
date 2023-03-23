@@ -17,8 +17,9 @@ const {
   vendorAddProduct,
   allVendorProducts,
   vendorSearchProduct,
+  vendorGetOneProduct,
 } = require("../controllers/Vendor/Product");
-const { getVendor } = require("../controllers/Vendor/User");
+const { getVendor, updateVendor } = require("../controllers/Vendor/User");
 const { vendorMiddleware } = require("../middleware/vendorMiddleware");
 
 const router = express.Router();
@@ -36,11 +37,13 @@ router.post("/auth/reset-password", vendorResetPassword);
 
 // Vendor profile
 router.get("/user/me", [vendorMiddleware, getVendor]);
+router.put("/user/update", [vendorMiddleware, updateVendor]);
 
 // Product
 router.post("/product/add", [vendorMiddleware, vendorAddProduct]);
 router.get("/product", [vendorMiddleware, allVendorProducts]);
 router.get("/product/search", [vendorMiddleware, vendorSearchProduct]);
+router.get("/product/:id", [vendorMiddleware, vendorGetOneProduct]);
 
 // Order
 router.get("/orders", [vendorMiddleware, getVendorOrders]);
