@@ -13,7 +13,7 @@ const { validateInventry } = require("../middleware/validateInventory");
 const router = express.Router();
 
 router
-  .route("/placeOrder")
+  .route("/placeorder")
   .post(authMiddle, validateInventry, cloudaxPay, placeOrder);
 router.route("/:id/cancel").patch(authMiddle, userCancelOrder);
 // router.route("/:id/admin/cancel").patch(authMiddle, adminCancelOrder);
