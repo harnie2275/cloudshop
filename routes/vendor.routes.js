@@ -1,4 +1,5 @@
 const express = require("express");
+const { adminQueryUser } = require("../controllers/Admin/User");
 
 const {
   createVendor,
@@ -53,6 +54,9 @@ router.get("/product/:id", [vendorMiddleware, vendorGetOneProduct]);
 router.get("/orders", [vendorMiddleware, getVendorOrders]);
 router.put("/orders/:id", [vendorMiddleware, vendorUpdateOrder]);
 router.get("/orders/:id", [vendorMiddleware, vendorGetSingleOrder]);
+
+// User
+router.get("/user/:id", [vendorMiddleware, adminQueryUser]);
 
 // Media
 router.get("/media", [vendorMiddleware, getAllVendorImages]);
