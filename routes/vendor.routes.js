@@ -17,6 +17,7 @@ const {
   getVendorOrders,
   vendorUpdateOrder,
   vendorGetSingleOrder,
+  vendorSearchOrders,
 } = require("../controllers/Vendor/Order");
 const {
   vendorAddProduct,
@@ -51,6 +52,7 @@ router.get("/product/search", [vendorMiddleware, vendorSearchProduct]);
 router.get("/product/:id", [vendorMiddleware, vendorGetOneProduct]);
 
 // Order
+router.get("/orders/search", [vendorMiddleware, vendorSearchOrders]);
 router.get("/orders", [vendorMiddleware, getVendorOrders]);
 router.put("/orders/:id", [vendorMiddleware, vendorUpdateOrder]);
 router.get("/orders/:id", [vendorMiddleware, vendorGetSingleOrder]);

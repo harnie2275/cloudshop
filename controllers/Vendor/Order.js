@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Order = require("../../models/Order");
 const Product = require("../../models/Product");
+const getSearchParams = require("../../utils/getSearchParams");
 const {
   respondWithSuccess,
   respondWithError,
@@ -144,5 +145,75 @@ exports.vendorUpdateOrder = asyncHandler(async (req, res) => {
       promisesResolved,
       "Your items have been updated"
     );
+  }
+});
+
+exports.vendorSearchOrders = asyncHandler(async (req, res) => {
+  const { expressionType, filter, isInteger, searchBy, searchQuery } =
+    getSearchParams(req);
+
+  const regexFilterParam = {
+    // query contains
+    contains: {
+      [searchBy]: new RegExp(searchQuery, "i"),
+    },
+    // Query starts with
+    starts_with: {
+      [searchBy]: new RegExp("^" + searchQuery, "i"),
+    },
+    // Exact query (Case sensitive)
+    is: {
+      [searchBy]: req.query.q,
+    },
+    // Exact query (Case insensitive)
+    is_i: {
+      [searchBy]: isInteger
+        ? parseFloat(req.query.q || 0)
+        : new RegExp("^" + searchQuery + "$", "i"),
+    },
+    // Is greater than  (Numbers)
+    is_gt: {
+      [searchBy]: isInteger ? { $gt: parseFloat(req.query.q) } : "",
+    },
+    // Is lesser than  (Numbers)
+    is_lt: {
+      [searchBy]: isInteger ? { $lt: parseFloat(req.query.q) } : "",
+    },
+  };
+  const searchParams = {
+    ...regexFilterParam[filter],
+  };
+  const vendor = req.vendor;
+
+  //   Get all vendor's products
+  const products = await Product.find({ addedBy: vendor?._id });
+
+  //   Get all orders
+  const orders = await Order.find(searchParams);
+
+  //   Get vendor's orders from all vendor products and all orders
+  const vendorOrders = orders.filter((order) =>
+    order.items.some((item) =>
+      products.map((product) => product?._id?.toString()).includes(item.id)
+    )
+  );
+
+  const vendorFilteredOutOrders = vendorOrders.map((vo) => {
+    const doc = vo._doc;
+    return {
+      ...doc,
+      items: doc.items.filter((i) =>
+        products.map((product) => product?._id?.toString()).includes(i.id)
+      ),
+    };
+  });
+  console.log(vendorFilteredOutOrders);
+
+  if (vendorFilteredOutOrders) {
+    // Filter
+
+    return respondWithSuccess(res, vendorFilteredOutOrders, "Fetched", 200);
+  } else {
+    return respondWithError(res, [], "An error occured", 400);
   }
 });
