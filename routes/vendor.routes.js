@@ -13,6 +13,7 @@ const {
   addVendorImage,
   getAllVendorImages,
 } = require("../controllers/Vendor/Media");
+const { analytics } = require("../controllers/Vendor/Metrics");
 const {
   getVendorOrders,
   vendorUpdateOrder,
@@ -63,4 +64,8 @@ router.get("/user/:id", [vendorMiddleware, adminQueryUser]);
 // Media
 router.get("/media", [vendorMiddleware, getAllVendorImages]);
 router.post("/media/add", [vendorMiddleware, addVendorImage]);
+
+// Analytics
+router.get("/analytics", [vendorMiddleware, analytics]);
+
 module.exports = router;
