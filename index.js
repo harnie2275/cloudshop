@@ -54,6 +54,7 @@ const orderRoutes = require("./routes/order.routes");
 const adminRoutes = require("./routes/admin.routes");
 const miscRoutes = require("./routes/misc.routes");
 const vendorRoutes = require("./routes/vendor.routes");
+const verificationRoutes = require("./routes/verification.routes");
 
 const { activateAccount } = require("./utils/helper/template/activateAccount");
 const mailer = require("./utils/mailer");
@@ -97,6 +98,7 @@ app.use(`${API_VERSION}/order`, orderRoutes);
 app.use(`${API_VERSION}/admin`, adminRoutes);
 app.use(`${API_VERSION}/misc`, miscRoutes);
 app.use(`${API_VERSION}/vendor`, vendorRoutes);
+app.use(`${API_VERSION}/verification`, verificationRoutes);
 
 /**
  * @return next error
