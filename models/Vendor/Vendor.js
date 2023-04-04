@@ -68,6 +68,16 @@ const Vendor = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    verification_status:{
+      type: String,
+      enum: [
+        "pending",
+        "processing",
+        "failed",
+        "verified",
+      ],
+      default: "pending",
+    }
   },
   {
     timestamps: true,
