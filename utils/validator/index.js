@@ -90,10 +90,20 @@ const orderValidator = (data) => {
   return schema.validate(data);
 };
 
+const verificationValidator = (data) => {
+  const schema = JOI.object({
+    images: JOI.array().required(),
+    // partner_params: JOI.object().required(),
+  });
+
+  return schema.validate(data);
+};
+
 module.exports = {
   regValidator,
   loginValidator,
   productValidator,
   orderValidator,
   regAdminValidator,
+  verificationValidator,
 };
