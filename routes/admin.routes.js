@@ -28,6 +28,19 @@ const {
 const { NGNCLDX } = require("../controllers/MiscController");
 const { adminMiddle } = require("../middleware/adminMiddle");
 const { MultiPhotoConverter } = require("../middleware/MultiPhotoConverter");
+const {
+  getAllVerifications,
+  getOneVerification,
+  updateSeenStatus,
+  getUnseenVerifications,
+  updateVerificationStatus,
+} = require("../controllers/Admin/Verification");
+const {
+  getAllVendors,
+  getOneVendor,
+  unsuspendVendor,
+  suspendVendor,
+} = require("../controllers/Admin/Vendor");
 
 const router = express.Router();
 
@@ -67,5 +80,18 @@ router
 
 //todo: misc
 router.post("/misc/ngncldx", NGNCLDX);
+
+// Verification
+router.get("/verifications", adminMiddle, getAllVerifications);
+router.post("/verifications/seen", adminMiddle, updateSeenStatus);
+router.get("/verifications/unseen", adminMiddle, getUnseenVerifications);
+router.post("/verifications/:id", adminMiddle, updateVerificationStatus);
+router.get("/verifications/:id", adminMiddle, getOneVerification);
+
+// Vendor
+router.get("/vendors", adminMiddle, getAllVendors);
+router.get("/vendors/:id", adminMiddle, getOneVendor);
+router.get("/vendors/:id/enable", adminMiddle, unsuspendVendor);
+router.get("/vendors/:id/disable", adminMiddle, suspendVendor);
 
 module.exports = router;

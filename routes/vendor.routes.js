@@ -27,7 +27,10 @@ const {
   vendorGetOneProduct,
 } = require("../controllers/Vendor/Product");
 const { getVendor, updateVendor } = require("../controllers/Vendor/User");
-const { vendorMiddleware } = require("../middleware/vendorMiddleware");
+const {
+  vendorMiddleware,
+  vendorIdentityMiddleware,
+} = require("../middleware/vendorMiddleware");
 
 const router = express.Router();
 
@@ -47,7 +50,11 @@ router.get("/user/me", [vendorMiddleware, getVendor]);
 router.put("/user/update", [vendorMiddleware, updateVendor]);
 
 // Product
-router.post("/product/add", [vendorMiddleware, vendorAddProduct]);
+router.post("/product/add", [
+  vendorMiddleware,
+  vendorIdentityMiddleware,
+  vendorAddProduct,
+]);
 router.get("/product", [vendorMiddleware, allVendorProducts]);
 router.get("/product/search", [vendorMiddleware, vendorSearchProduct]);
 router.get("/product/:id", [vendorMiddleware, vendorGetOneProduct]);
@@ -63,7 +70,11 @@ router.get("/user/:id", [vendorMiddleware, adminQueryUser]);
 
 // Media
 router.get("/media", [vendorMiddleware, getAllVendorImages]);
-router.post("/media/add", [vendorMiddleware, addVendorImage]);
+router.post("/media/add", [
+  vendorMiddleware,
+  vendorIdentityMiddleware,
+  addVendorImage,
+]);
 
 // Analytics
 router.get("/analytics", [vendorMiddleware, analytics]);

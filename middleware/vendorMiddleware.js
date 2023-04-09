@@ -28,6 +28,12 @@ exports.vendorMiddleware = async (req, res, next) => {
 
     const verifyVendor = await Vendor.findById(decodedToken.userId);
     if (verifyVendor) {
+      if (verifyVendor?.disabled)
+        return respondWithError(
+          res,
+          [],
+          "Your account has been disabled, please contact the administrator"
+        );
       req.vendor = verifyVendor;
     } else {
       return respondWithError(res, [], "Not authorised", 401);
@@ -36,4 +42,10 @@ exports.vendorMiddleware = async (req, res, next) => {
   } catch (error) {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
+};
+
+exports.vendorIdentityMiddleware = async (req, res, next) => {
+  if (!req.vendor?.identity_verified)
+    return respondWithError(res, [], "You need to verify your identity");
+  next();
 };
