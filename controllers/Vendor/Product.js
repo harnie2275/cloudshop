@@ -205,3 +205,24 @@ exports.vendorGetOneProduct = asyncHandler(async (req, res) => {
     respondWithError(res, {}, error.message, StatusCodes.BAD_REQUEST);
   }
 });
+
+exports.vendorEditProduct = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+
+  const data = req.body;
+
+  const vendor = req.vendor;
+
+  const product = await Product.findById(id);
+
+  if (!product) return respondWithError(res, [], "Product not found");
+
+  if (product?.addedBy?.toString() !== vendor?._id?.toString())
+    return respondWithError(res, [], "Product not found");
+  const updateProduct = await product.update(data);
+  // await updateProduct.save();
+  if (!updateProduct)
+    return respondWithError(res, [], "An error occured while updating product");
+
+  return respondWithSuccess(res, updateProduct, "Product successfully updated");
+});

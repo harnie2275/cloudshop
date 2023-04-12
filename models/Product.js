@@ -7,6 +7,10 @@ const ProductSchema = new Schema(
       required: [true, "Display name is required"],
       trim: true,
     },
+    published: {
+      type: Boolean,
+      default: true,
+    },
     amount: {
       type: Number,
       required: [true, "Amount is required"],

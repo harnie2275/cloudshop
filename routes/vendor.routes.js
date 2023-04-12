@@ -25,6 +25,7 @@ const {
   allVendorProducts,
   vendorSearchProduct,
   vendorGetOneProduct,
+  vendorEditProduct,
 } = require("../controllers/Vendor/Product");
 const { getVendor, updateVendor } = require("../controllers/Vendor/User");
 const {
@@ -58,6 +59,7 @@ router.post("/product/add", [
 router.get("/product", [vendorMiddleware, allVendorProducts]);
 router.get("/product/search", [vendorMiddleware, vendorSearchProduct]);
 router.get("/product/:id", [vendorMiddleware, vendorGetOneProduct]);
+router.put("/product/:id", vendorMiddleware, vendorEditProduct);
 
 // Order
 router.get("/orders/search", [vendorMiddleware, vendorSearchOrders]);
