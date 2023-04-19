@@ -38,3 +38,23 @@ exports.updateVendor = asyncHandler(async (req, res) => {
     );
   }
 });
+
+exports.updateVendorStore = asyncHandler(async (req, res) => {
+  const vendor = req.vendor;
+  const update = req.body;
+
+  console.log(update);
+
+  if (!update) return respondWithError(res, [], "Nothing to update", 400);
+
+  const updatedVendor = await Vendor.findByIdAndUpdate(vendor._id, {
+    "store.name": update?.name || vendor?.store?.name,
+    "store.address": update?.address || vendor?.store?.address,
+  });
+
+  return respondWithSuccess(
+    res,
+    updatedVendor,
+    "Your details have been updated successfully"
+  );
+});
